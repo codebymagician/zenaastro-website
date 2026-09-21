@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111111">
+<title>Zena — Your AI Astrologer</title>
+<meta name="description" content="Zena is your personal AI astrologer. Available 24/7. No judgement. Real guidance.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Zena — Your AI Astrologer">
+<meta property="og:description" content="Available 24/7. No judgement. Real guidance.">
+<style>
+:root{--bg:#111;--card:#1b1b1f;--fg:#f4f1ea;--mute:#a9a49a;--gold:#e6b566;--line:#2a2a30}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:20px 0}
+.logo{font-weight:700;font-size:22px;letter-spacing:.5px}.logo span{color:var(--gold)}
+nav a.l{color:var(--mute);margin-left:20px;font-size:14px}
+.btn{display:inline-block;background:var(--gold);color:#111;font-weight:600;padding:14px 28px;border-radius:999px}
+.btn.ghost{background:none;color:var(--fg);border:1px solid var(--line);margin-left:10px}
+.hero{text-align:center;padding:80px 0 64px;background:radial-gradient(ellipse at 50% 0,#2a2115 0,transparent 60%)}
+.hero .tag{color:var(--gold);font-size:13px;letter-spacing:2px;text-transform:uppercase}
+h1{font-size:clamp(36px,7vw,64px);line-height:1.1;margin:16px 0}
+.hero p{color:var(--mute);max-width:520px;margin:0 auto 32px;font-size:18px}
+h2{font-size:clamp(26px,4vw,36px);text-align:center;margin:0 0 40px}
+section{padding:56px 0}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px}
+.card b{display:block;font-size:28px;margin-bottom:8px}
+.card h3{margin:0 0 6px;font-size:18px}.card p{margin:0;color:var(--mute);font-size:15px}
+.steps .card b{color:var(--gold);font-size:22px}
+.chat{max-width:420px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.m{padding:12px 16px;border-radius:16px;max-width:85%;font-size:15px}
+.u{background:var(--gold);color:#111;align-self:flex-end;border-bottom-right-radius:4px}
+.z{background:var(--card);border:1px solid var(--line);border-bottom-left-radius:4px}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:10px;max-width:720px;margin-inline:auto}
+summary{cursor:pointer;font-weight:600}details p{color:var(--mute);margin:10px 0 0}
+.cta{text-align:center;background:var(--card);border-radius:24px;padding:56px 20px}
+footer{border-top:1px solid var(--line);padding:28px 0;color:var(--mute);font-size:14px;text-align:center}
+footer a{margin:0 10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav>
+  <a class="logo" href="#">Zena<span>.</span></a>
+  <div><a class="l" href="#features">Features</a><a class="l" href="#how">How it works</a><a class="l" href="#faq">FAQ</a></div>
+</nav>
+
+<header class="hero">
+  <div class="tag">Your personal AI astrologer</div>
+  <h1>Ask the stars.<br>Anytime. Anything.</h1>
+  <p>Available 24/7. No judgement. Real guidance on love, career and life, based on your birth chart.</p>
+  <a class="btn" href="#download">Get started</a><a class="btn ghost" href="#how">See how it works</a>
+</header>
+
+<section id="features">
+  <h2>Astrology that fits your life</h2>
+  <div class="grid">
+    <div class="card"><b>🌙</b><h3>Available 24/7</h3><p>Midnight overthinking or a morning decision, Zena is always awake.</p></div>
+    <div class="card"><b>🔮</b><h3>Your birth chart</h3><p>Guidance built from your date, time and place of birth, not generic sun-sign lines.</p></div>
+    <div class="card"><b>💬</b><h3>No judgement</h3><p>Ask the questions you would never ask a person. Private and pressure-free.</p></div>
+    <div class="card"><b>✨</b><h3>Real guidance</h3><p>Clear, practical answers on love, career, money and timing.</p></div>
+  </div>
+</section>
+
+<section id="how" class="steps">
+  <h2>How it works</h2>
+  <div class="grid">
+    <div class="card"><b>1</b><h3>Share your birth details</h3><p>Date, time and place. Takes under a minute.</p></div>
+    <div class="card"><b>2</b><h3>Ask your question</h3><p>Type it the way you would text a friend.</p></div>
+    <div class="card"><b>3</b><h3>Get your reading</h3><p>Personal insight from your chart, in plain language.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Ask like you would ask a friend</h2>
+  <div class="chat">
+    <div class="m u">Will I get a better job this year?</div>
+    <div class="m z">Your 10th house gets strong support from Jupiter from March. Push for the change then, and keep April for negotiating.</div>
+    <div class="m u">And what about love?</div>
+    <div class="m z">Venus turns favourable in your chart soon. Say yes to introductions, and give it time.</div>
+  </div>
+</section>
+
+<section id="faq">
+  <h2>Questions</h2>
+  <details><summary>Is Zena a real astrologer?</summary><p>Zena is an AI astrologer. It offers guidance for reflection and entertainment, not a substitute for professional medical, legal or financial advice.</p></details>
+  <details><summary>Do I need my exact birth time?</summary><p>It gives the most accurate chart, but you can still get useful readings with an approximate time.</p></details>
+  <details><summary>Is my data private?</summary><p>Your birth details and chats are used only to give you readings.</p></details>
+</section>
+
+<section id="download">
+  <div class="cta">
+    <h2 style="margin-bottom:12px">Your chart is waiting</h2>
+    <p style="color:var(--mute);margin:0 0 24px">Start your first reading today.</p>
+    <a class="btn" href="#">Get the app</a>
+  </div>
+</section>
+</div>
+
+<footer>
+  <a href="#">Privacy</a><a href="#">Terms</a><a href="mailto:support@zenaastro.com">Contact</a>
+  <div style="margin-top:10px">© 2026 Zena Astro</div>
+</footer>
+</body>
+</html>
