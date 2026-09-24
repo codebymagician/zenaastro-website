@@ -1,0 +1,46 @@
+:root{--bg:#140b18;--card:#1f141d;--fg:#f4f1ea;--mute:#a99db0;--gold:#f0be55;--magenta:#ef5aa7;--line:#2a2130}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.7 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+a{color:var(--gold);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:880px;margin:0 auto;padding:0 20px}
+
+nav{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;padding:20px 0}
+.logo{font-weight:700;font-size:22px;letter-spacing:.5px;display:inline-flex;align-items:center;color:var(--fg)}
+.logo:hover{text-decoration:none}
+.logo span{color:var(--gold)}
+.mark{flex:none;margin-right:9px}
+.navlinks{display:flex;flex-wrap:wrap;gap:6px 18px}
+.navlinks a{color:var(--mute);font-size:14px}
+.navlinks a:hover{color:var(--gold);text-decoration:none}
+.navlinks a.active{color:var(--gold)}
+
+header.page{padding:44px 0 8px;background:radial-gradient(ellipse at 50% -20%,#3d1348 0,transparent 60%)}
+header.page .tag{color:var(--gold);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+h1{font-size:clamp(30px,5vw,42px);line-height:1.15;margin:0 0 14px}
+.meta{color:var(--mute);font-size:14px;margin:0}
+.meta b{color:var(--fg);font-weight:600}
+
+.content{padding:28px 0 8px;max-width:760px}
+.content h2{font-size:22px;margin:34px 0 10px;color:var(--fg)}
+.content h3{font-size:17px;margin:22px 0 6px;color:var(--gold)}
+.content p{margin:0 0 14px;color:#d8d3d9}
+.content ul{margin:0 0 16px;padding-left:22px}
+.content li{margin:6px 0;color:#d8d3d9}
+.content strong{color:var(--fg)}
+.content .lead{font-size:17px;color:var(--mute)}
+hr{border:none;border-top:1px solid var(--line);margin:34px 0}
+
+.contact{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:14px;padding:20px 24px;margin:20px 0}
+.contact p{margin:6px 0}
+.contact a{font-weight:600}
+
+.backhome{display:inline-block;margin:30px 0 10px;color:var(--mute);font-size:14px}
+.backhome:hover{color:var(--gold);text-decoration:none}
+
+footer{border-top:1px solid var(--line);padding:28px 0;color:var(--mute);font-size:14px;text-align:center;margin-top:30px}
+footer a{margin:0 10px}
+footer a:hover{color:var(--gold)}
+footer .company{margin-top:14px}
+footer .company b{color:var(--fg);font-weight:600}
