@@ -11,7 +11,8 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 .wrap{max-width:480px;margin:0 auto;padding:27px 16px 40px;background:linear-gradient(#161616,var(--bg) 300px)}
-.hero{position:relative;height:200px;border-radius:24px;overflow:hidden;background:radial-gradient(circle at 60% 20%,#fff3d0,#e2b96a 45%,#8a6a34)}
+.hero{position:relative;height:200px;border-radius:24px;overflow:hidden;background:#e2b96a}
+.hero img{width:100%;height:100%;object-fit:cover;object-position:50% 20%;display:block}
 .play{position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px;border-radius:50%;background:#fff;display:grid;place-items:center}
 .play:after{content:"";border-left:14px solid #111;border-top:8px solid transparent;border-bottom:8px solid transparent;margin-left:3px}
 .eyebrow{text-align:center;color:#c9b98a;font-weight:600;font-size:15px;letter-spacing:.5px;margin:22px 0 14px}
@@ -41,7 +42,7 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 </head>
 <body>
 <div class="wrap">
-  <div class="hero"><div class="play"></div></div>
+  <div class="hero"><img src="zena-hero.jpg" alt="Woman reading her horoscope on her phone" width="1181" height="516"><div class="play"></div></div>
   <div class="eyebrow">Ask all your worries away</div>
   <h1>Zena has all the answers for you</h1>
 
