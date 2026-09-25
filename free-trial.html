@@ -4,57 +4,73 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#111111">
+<meta name="robots" content="noindex">
 <title>Start your free trial — Zena</title>
 <style>
-:root{--bg:#111;--card:#1b1b1f;--fg:#f4f1ea;--mute:#a9a49a;--gold:#e6b566;--line:#2a2a30}
+:root{--bg:#111;--card:#1c1c1c;--fg:#fff;--mute:#b9b4a8;--gold:#e9d8a6;--gold2:#8c7c4f;--line:#3a3a3a}
 *{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at 50% 0,#2a2115 0,var(--bg) 60%) no-repeat var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh}
-a{color:inherit;text-decoration:none}
-.wrap{max-width:440px;margin:0 auto;padding:0 20px 48px}
-.logo{display:block;font-weight:700;font-size:22px;padding:20px 0}.logo span{color:var(--gold)}
-h1{font-size:30px;line-height:1.15;margin:8px 0;text-align:center}
-.sub{color:var(--mute);text-align:center;margin:0 0 24px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:16px}
-.plan{border-color:var(--gold)}
-.plan b{font-size:28px}.plan small{color:var(--mute)}
-ul{list-style:none;padding:0;margin:12px 0 0;color:var(--mute);font-size:15px}
-li:before{content:"✓ ";color:var(--gold)}
-label{display:block;font-size:14px;color:var(--mute);margin-bottom:12px}
-input{width:100%;margin-top:4px;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit}
-.btn{width:100%;border:0;cursor:pointer;background:var(--gold);color:#111;font:600 16px inherit;padding:14px;border-radius:999px;margin-top:4px}
-.note{color:var(--mute);font-size:13px;text-align:center}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:20px}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.wrap{max-width:480px;margin:0 auto;padding:27px 16px 40px;background:linear-gradient(#161616,var(--bg) 300px)}
+.hero{position:relative;height:200px;border-radius:24px;overflow:hidden;background:radial-gradient(circle at 60% 20%,#fff3d0,#e2b96a 45%,#8a6a34)}
+.play{position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px;border-radius:50%;background:#fff;display:grid;place-items:center}
+.play:after{content:"";border-left:14px solid #111;border-top:8px solid transparent;border-bottom:8px solid transparent;margin-left:3px}
+.eyebrow{text-align:center;color:#c9b98a;font-weight:600;font-size:15px;letter-spacing:.5px;margin:22px 0 14px}
+h1{font-size:26px;line-height:1.2;text-align:center;margin:0 0 30px;font-weight:700}
+.feats{display:flex;justify-content:space-between;text-align:center;font-size:12.5px;line-height:1.3;margin-bottom:26px}
+.feats div{width:16%}
+.ic{width:48px;height:48px;margin:0 auto 10px;border-radius:50%;border:1px solid #3b3526;background:radial-gradient(#2c2618,#161616);display:grid;place-items:center;box-shadow:0 0 0 2px #1a1a1a}
+svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.steps{background:radial-gradient(ellipse at 50% 0,#2b271d,var(--card) 60%);border:1px solid #2b2b2b;border-top-color:#5a4f33;border-radius:24px;padding:24px 16px}
+.step{display:flex;gap:16px;position:relative;padding-bottom:24px}
+.step:last-child{padding-bottom:0}
+.step:not(:last-child):after{content:"";position:absolute;left:19px;top:40px;bottom:0;width:6px;margin-left:1px;background:linear-gradient(#a08c5a,#4a4230)}
+.sq{flex:none;width:40px;height:40px;border-radius:8px;border:1px solid var(--line);background:#1a1a1a;display:grid;place-items:center;z-index:1}
+.sq svg{width:20px;height:20px}
+.step b{display:block;font-size:17px}
+.step span{color:var(--mute);font-size:14px}
+.users{display:flex;align-items:center;gap:12px;justify-content:center;margin:30px 0 14px;color:#8d8d8d;font-size:20px;font-weight:600}
+.users:before,.users:after{content:"";height:1px;width:60px;background:linear-gradient(90deg,transparent,#555)}
+.users:after{transform:scaleX(-1)}
+.cta{display:block;text-align:center;padding:16px;border-radius:999px;border:1px solid #d9c98f;color:#1a1a1a;font-weight:700;font-size:18px;text-decoration:none;background:radial-gradient(ellipse at 50% 0,#c9b98a,#7d6f47 80%)}
+.note{text-align:center;font-size:13px;margin:14px 0 0}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;padding:20px}
 .ov:target{display:flex}
-.ov .card{max-width:360px;text-align:center;margin:0}
-.ov p{color:var(--mute)}
-.ov .btn{display:block}
+.box{max-width:340px;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:28px 24px;text-align:center}
+.box h2{margin:8px 0;font-size:20px}.box p{color:var(--mute);margin:0 0 20px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <a class="logo" href="/">Zena<span>.</span></a>
-  <h1>Start your free trial</h1>
-  <p class="sub">Try your personal AI astrologer, free.</p>
+  <div class="hero"><div class="play"></div></div>
+  <div class="eyebrow">Ask all your worries away</div>
+  <h1>Zena has all the answers for you</h1>
 
-  <div class="card plan">
-    <b>₹0</b> <small>for 3 days, then ₹199/week. Cancel anytime.</small>
-    <ul><li>Unlimited questions, 24/7</li><li>Readings from your birth chart</li><li>Love, career &amp; money guidance</li></ul>
+  <div class="feats">
+    <div><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 12a7 7 0 0 1 12-5M3 12l-1 5 4-1"/><circle cx="15" cy="15" r="5"/></svg></div>5 Daily Questions</div>
+    <div><div class="ic"><svg viewBox="0 0 24 24"><path d="M20 14A8 8 0 0 1 10 4a8 8 0 1 0 10 10z"/></svg></div>Your Daily Horoscope</div>
+    <div><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3c-3 4-3 9-1 13l1 2 1-2c2-4 2-9-1-13zM7 9c-3 2-4 5-3 8l5 3M17 9c3 2 4 5 3 8l-5 3"/></svg></div>Daily Mantra</div>
+    <div><div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/></svg></div>Panchang Timings</div>
+    <div><div class="ic"><svg viewBox="0 0 24 24"><path d="M9 20C4 16 3 12 3 9a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 3-1 7-8 11z"/><path d="M15 21c5-4 6-7 6-10"/></svg></div>Kundali Matching</div>
+    <div><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg></div>..and much more</div>
   </div>
 
-  <form class="card" action="#paywall" onsubmit="location.hash='paywall';return false">
-    <label>Name<input required autocomplete="name" placeholder="Your name"></label>
-    <label>Mobile number<input required type="tel" inputmode="numeric" pattern="[0-9]{10}" maxlength="10" autocomplete="tel-national" placeholder="10-digit number"></label>
-    <button class="btn">Start trial</button>
-  </form>
-  <p class="note">By continuing you agree to our Terms and Privacy Policy.</p>
+  <div class="steps">
+    <div class="step"><div class="sq"><svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0"/></svg></div><div><b>Start your FREE trial</b><span>Pay ₹1, get refund instantly</span></div></div>
+    <div class="step"><div class="sq"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg></div><div><b>Ask Zena anything</b><span>Love, career, future and more</span></div></div>
+    <div class="step"><div class="sq"><svg viewBox="0 0 24 24"><path d="M6 17V11a6 6 0 0 1 12 0v6l2 2H4zM10 21h4"/></svg></div><div><b>Notified before autopay</b><span>₹699 for 3 month after 1 day</span></div></div>
+  </div>
+
+  <div class="users">What users say</div>
+  <a class="cta" href="#paywall">Start FREE trial for ₹1</a>
+  <p class="note">We'll remind you before autopay. Cancel anytime.</p>
 </div>
 
 <div class="ov" id="paywall">
-  <div class="card">
+  <div class="box">
     <div style="font-size:36px">🚧</div>
-    <h2 style="margin:8px 0">Payment gateway yet to be integrated</h2>
+    <h2>Payment gateway yet to be integrated</h2>
     <p>This is a demo page. No payment was taken.</p>
-    <a class="btn" href="#">Close</a>
+    <a class="cta" href="#">Close</a>
   </div>
 </div>
 </body>
