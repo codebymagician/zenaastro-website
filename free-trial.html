@@ -36,6 +36,12 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 .ov:target{display:flex}
 .box{max-width:340px;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:28px 24px;text-align:center}
 .box h2{margin:8px 0;font-size:20px}.box p{color:var(--mute);margin:0 0 20px}
+.box{width:100%}.box [hidden]{display:none}
+.box input{width:100%;padding:14px;margin-bottom:14px;border-radius:12px;border:1px solid var(--line);background:#111;color:var(--fg);font-size:18px;text-align:center}
+.box button.cta{width:100%;font-family:inherit;cursor:pointer}
+.lnk{display:block;margin-top:14px;background:none;border:0;color:var(--mute);font-size:14px;cursor:pointer;text-decoration:underline}
+.err{color:#ff8a80;font-size:14px;margin-top:14px}.wait{font-size:14px}
+#qr{width:200px;height:200px;background:#fff;border-radius:12px;padding:8px;margin:0 auto 14px;display:block}
 </style>
 </head>
 <body>
@@ -66,11 +72,97 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 
 <div class="ov" id="paywall">
   <div class="box">
-    <div style="font-size:36px">🚧</div>
-    <h2>Payment gateway yet to be integrated</h2>
-    <p>This is a demo page. No payment was taken.</p>
-    <a class="cta" href="#">Close</a>
+    <div id="s-phone">
+      <h2>Verify your number</h2>
+      <p>We'll send a 4-digit code by SMS.</p>
+      <input id="mobile" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" autocomplete="tel-national">
+      <button class="cta" id="b-send">Send code</button>
+    </div>
+    <div id="s-otp" hidden>
+      <h2>Enter the code</h2>
+      <p id="otp-to"></p>
+      <input id="otp" type="tel" inputmode="numeric" maxlength="4" placeholder="• • • •" autocomplete="one-time-code">
+      <button class="cta" id="b-verify">Verify &amp; continue</button>
+      <button class="lnk" id="b-resend">Resend code</button>
+    </div>
+    <div id="s-pay" hidden>
+      <h2>Pay ₹1 to start</h2>
+      <p>Scan with any UPI app, or tap below on your phone. Refunded instantly.</p>
+      <img id="qr" alt="UPI QR code" hidden>
+      <a class="cta" id="b-upi" href="#" hidden>Pay with UPI app</a>
+      <p id="pay-wait" class="wait">Waiting for payment…</p>
+    </div>
+    <div id="s-done" hidden>
+      <div style="font-size:36px">✓</div>
+      <h2>You're in!</h2>
+      <p>Your free trial has started. Open the Zena app and log in with this number.</p>
+    </div>
+    <div id="err" class="err" role="alert" hidden></div>
+    <a class="lnk" href="#" id="b-close">Close</a>
   </div>
 </div>
+<script>
+(function(){
+// Backend base URL. The /web-service/v1 routes are in zenaclub-backend.
+var API="https://api.zenaclub.com";
+var $=function(i){return document.getElementById(i)};
+var token="",userId="",mobile="";   // in memory only, never persisted
+var pollTimer=null;
+
+function api(path,body,auth,method){
+  var h={"Content-Type":"application/json","X-TENANT":"ZENA","device-id":"web"};
+  if(auth){h["Authorization"]="Bearer "+token;h["user-id"]=userId}
+  return fetch(API+path,{method:method||"POST",headers:h,body:body?JSON.stringify(body):undefined})
+    .then(function(r){return r.json().catch(function(){return{}}).then(function(j){
+      if(!r.ok)throw new Error(j.error||"Something went wrong. Please try again.");
+      return j})});
+}
+function show(id){["s-phone","s-otp","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});err("")}
+function err(m){$("err").textContent=m;$("err").hidden=!m}
+function busy(b,on){b.disabled=on;b.style.opacity=on?.6:1}
+function run(btn,fn){busy(btn,true);err("");return Promise.resolve().then(fn).catch(function(e){err(e.message)}).then(function(){busy(btn,false)})}
+
+function sendOtp(){
+  var m=$("mobile").value.replace(/\D/g,"");
+  if(m.length!==10){err("Enter a valid 10-digit mobile number.");return}
+  mobile=m;
+  return api("/web-service/v1/public/request-otp",{mobile:m}).then(function(){
+    $("otp-to").textContent="Sent to +91 "+m;show("s-otp");$("otp").focus()});
+}
+function verifyOtp(){
+  var o=$("otp").value.replace(/\D/g,"");
+  if(o.length!==4){err("Enter the 4-digit code.");return}
+  return api("/web-service/v1/public/verify-otp",{mobile:mobile,otp:o}).then(function(r){
+    token=r.token;userId=r.userDetails&&r.userDetails.id;
+    if(!token||!userId)throw new Error("Login failed. Please try again.");
+    return startPayment()});
+}
+function startPayment(){
+  return api("/web-service/v1/auth/subscription/initiate",{method:"upi"},true).then(function(r){
+    if(!r.paytmTxnToken)throw new Error("Payment is unavailable right now. Please try again later.");
+    return api("/web-service/v1/auth/subscription/paytm/qr",{mandateId:r.mandateId,txnToken:r.paytmTxnToken},true)
+  }).then(function(q){
+    if(q.qrCodeImageUrl){$("qr").src=q.qrCodeImageUrl;$("qr").hidden=false}
+    if(q.qrCodeContent){$("b-upi").href=q.qrCodeContent;$("b-upi").hidden=false}
+    show("s-pay");poll(q)});
+}
+function poll(q){
+  var end=Date.now()+(q.maxPollingDurationMs||180000);
+  (function tick(){
+    pollTimer=setTimeout(function(){
+      api("/web-service/v1/auth/subscription/paytm/qr/status?mandateId="+encodeURIComponent(q.internalOrderId),null,true,"GET").then(function(s){
+        if(s.isPaid){show("s-done");return}
+        if(s.isFinal||Date.now()>end){$("pay-wait").textContent="";err("Payment didn't complete. Close and try again.");return}
+        tick()
+      }).catch(function(){Date.now()>end?err("Couldn't confirm payment. Please try again."):tick()});
+    },q.pollingIntervalMs||3000);
+  })();
+}
+$("b-send").onclick=function(){run(this,sendOtp)};
+$("b-resend").onclick=function(){run(this,sendOtp)};
+$("b-verify").onclick=function(){run(this,verifyOtp)};
+$("b-close").onclick=function(e){e.preventDefault();clearTimeout(pollTimer);location.hash=""};
+})();
+</script>
 </body>
 </html>
