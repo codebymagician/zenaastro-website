@@ -91,6 +91,11 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
       <p id="in-as"></p>
       <button class="cta" id="b-start">Start FREE trial for ₹1</button>
     </div>
+    <div id="s-soon" hidden>
+      <div style="font-size:36px">🚧</div>
+      <h2>Payment gateway yet to be integrated</h2>
+      <p>This is a demo page. No payment was taken.</p>
+    </div>
     <div id="s-pay" hidden>
       <h2>Pay ₹1 to start</h2>
       <p>Scan with any UPI app, or tap below on your phone. Refunded instantly.</p>
@@ -112,6 +117,7 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 // Backend base URL. The /web-service/v1 routes are in zenaclub-backend.
 var API="https://apis.zenaclub.com";
 var $=function(i){return document.getElementById(i)};
+var PAYMENTS_LIVE=false; // flip to true once Paytm QR works; until then no payment API is called
 var token="",userId="",mobile="";   // in memory only, never persisted
 var pollTimer=null;
 
@@ -123,7 +129,7 @@ function api(path,body,auth,method){
       if(!r.ok)throw new Error(j.error||"Something went wrong. Please try again.");
       return j})});
 }
-function show(id){["s-phone","s-otp","s-in","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});err("")}
+function show(id){["s-phone","s-otp","s-in","s-soon","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});err("")}
 function err(m){$("err").textContent=m;$("err").hidden=!m}
 function busy(b,on){b.disabled=on;b.style.opacity=on?.6:1}
 function run(btn,fn){busy(btn,true);err("");return Promise.resolve().then(fn).catch(function(e){err(e.message)}).then(function(){busy(btn,false)})}
@@ -166,7 +172,7 @@ function poll(q){
 }
 $("b-send").onclick=function(){run(this,sendOtp)};
 $("b-resend").onclick=function(){run(this,sendOtp)};
-$("b-start").onclick=function(){run(this,startPayment)};
+$("b-start").onclick=function(){if(!PAYMENTS_LIVE){show("s-soon");return}run(this,startPayment)};
 $("b-verify").onclick=function(){run(this,verifyOtp)};
 $("b-close").onclick=function(e){e.preventDefault();clearTimeout(pollTimer);location.hash=""};
 })();
