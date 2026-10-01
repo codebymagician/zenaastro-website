@@ -85,6 +85,12 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
       <button class="cta" id="b-verify">Verify &amp; continue</button>
       <button class="lnk" id="b-resend">Resend code</button>
     </div>
+    <div id="s-in" hidden>
+      <div style="font-size:36px">✓</div>
+      <h2>Logged in</h2>
+      <p id="in-as"></p>
+      <button class="cta" id="b-start">Start FREE trial for ₹1</button>
+    </div>
     <div id="s-pay" hidden>
       <h2>Pay ₹1 to start</h2>
       <p>Scan with any UPI app, or tap below on your phone. Refunded instantly.</p>
@@ -117,7 +123,7 @@ function api(path,body,auth,method){
       if(!r.ok)throw new Error(j.error||"Something went wrong. Please try again.");
       return j})});
 }
-function show(id){["s-phone","s-otp","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});err("")}
+function show(id){["s-phone","s-otp","s-in","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});err("")}
 function err(m){$("err").textContent=m;$("err").hidden=!m}
 function busy(b,on){b.disabled=on;b.style.opacity=on?.6:1}
 function run(btn,fn){busy(btn,true);err("");return Promise.resolve().then(fn).catch(function(e){err(e.message)}).then(function(){busy(btn,false)})}
@@ -135,7 +141,7 @@ function verifyOtp(){
   return api("/web-service/v1/public/verify-otp",{mobile:mobile,otp:o}).then(function(r){
     token=r.token;userId=r.userDetails&&r.userDetails.id;
     if(!token||!userId)throw new Error("Login failed. Please try again.");
-    return startPayment()});
+    $("in-as").textContent="+91 "+mobile;show("s-in")});
 }
 function startPayment(){
   return api("/web-service/v1/auth/subscription/initiate",{method:"upi"},true).then(function(r){
@@ -160,6 +166,7 @@ function poll(q){
 }
 $("b-send").onclick=function(){run(this,sendOtp)};
 $("b-resend").onclick=function(){run(this,sendOtp)};
+$("b-start").onclick=function(){run(this,startPayment)};
 $("b-verify").onclick=function(){run(this,verifyOtp)};
 $("b-close").onclick=function(e){e.preventDefault();clearTimeout(pollTimer);location.hash=""};
 })();
