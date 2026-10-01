@@ -39,6 +39,8 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 .box{width:100%}.box [hidden]{display:none}
 .box input{width:100%;padding:14px;margin-bottom:14px;border-radius:12px;border:1px solid var(--line);background:#111;color:var(--fg);font-size:18px;text-align:center}
 .box button.cta{width:100%;font-family:inherit;cursor:pointer}
+.ph{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-left:14px;border-radius:12px;border:1px solid var(--line);background:#111;font-size:18px}
+.ph span{color:var(--mute)}.ph input{border:0;margin:0;background:none;text-align:left;padding-left:0}
 .lnk{display:block;margin-top:14px;background:none;border:0;color:var(--mute);font-size:14px;cursor:pointer;text-decoration:underline}
 .err{color:#ff8a80;font-size:14px;margin-top:14px}.wait{font-size:14px}
 #qr{width:200px;height:200px;background:#fff;border-radius:12px;padding:8px;margin:0 auto 14px;display:block}
@@ -75,7 +77,7 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
     <div id="s-phone">
       <h2>Verify your number</h2>
       <p>We'll send a 4-digit code by SMS.</p>
-      <input id="mobile" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" autocomplete="tel-national">
+      <div class="ph"><span>+91</span><input id="mobile" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" autocomplete="tel-national"></div>
       <button class="cta" id="b-send">Send code</button>
     </div>
     <div id="s-otp" hidden>
