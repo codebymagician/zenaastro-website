@@ -48,17 +48,34 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 .lnk{display:block;margin-top:14px;background:none;border:0;color:var(--mute);font-size:14px;cursor:pointer;text-decoration:underline}
 .err{color:#ff8a80;font-size:14px;margin-top:14px}.wait{font-size:14px}
 #qr{width:200px;height:200px;background:#fff;border-radius:12px;padding:8px;margin:0 auto 14px;display:block}
-.app{display:flex;align-items:center;gap:14px;width:100%;padding:12px;margin-bottom:10px;border-radius:14px;border:1px solid var(--line);background:#111;color:var(--fg);font:inherit;text-align:left;cursor:pointer}
-.app.on{border-color:var(--gold)}
-.app i{flex:none;width:64px;height:40px;border-radius:10px;display:grid;place-items:center;background:#fff}
-.app i img{width:48px;height:auto;display:block}
-.app em{margin-left:auto;width:18px;height:18px;border-radius:50%;border:2px solid var(--line)}.app.on em{background:var(--gold);border-color:var(--gold)}
-.app small{display:block;color:#7fd08a;font-size:12px}
+.ov.pay{background:#fff;align-items:flex-start;padding:0;overflow:auto}
+.ov.pay .box{max-width:480px;padding:0;background:none;border:0;border-radius:0;text-align:left;color:#111;font-family:"DM Sans",system-ui,sans-serif}
+.ph-head{display:flex;align-items:center;gap:18px;padding:18px 16px 14px;border-bottom:1px solid #e6e6ea;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.ph-head button{flex:none;display:grid;place-items:center;width:40px;height:40px;margin:-8px 0 -8px -8px;padding:0;background:none;border:0;cursor:pointer;color:#111}
+.ph-head svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ov.pay h2{margin:0;font-size:22px;font-weight:600;color:#111}
+.ov.pay .amt{margin:2px 0 0;font-size:14px;color:#8a8a92}
+.sec{display:flex;align-items:center;gap:8px;padding:11px 16px;background:#ececef;font-size:16px;font-weight:500;color:#6b6b73}
+.sec .fast{display:inline-flex;align-items:center;gap:3px;color:#1769c2}
+.sec .fast svg{width:15px;height:15px;fill:#1769c2}
+.ban{margin:0;padding:11px 16px;background:#b8e6fb;font-size:14px;color:#0b5a8c}
+.app{display:flex;align-items:center;gap:16px;width:100%;padding:12px 16px;margin:0;border:0;background:#fff;color:#111;font:inherit;font-size:18px;text-align:left;cursor:pointer}
+.app:active{background:#f4f4f6}
+.app i{flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:50%;overflow:hidden;background:#fff;border:1px solid #ececef}
+.app i img{display:block}
+.app i .crop{display:block;overflow:hidden}
+.app b{margin-left:auto;font-weight:400;font-size:26px;color:#555;line-height:1}
+.app[disabled]{opacity:.5}
+.ov.pay .ban{margin:0;color:#0b5a8c}
+.ov.pay .sec .fast svg{width:15px;height:15px;fill:#1769c2;stroke:none}
+.ov.pay .app i svg{width:26px;height:26px;fill:none;stroke:#111;stroke-width:1.6}
 .ov.login{background:#000;align-items:flex-start;padding:40px 16px}
 .ov.login .box{background:none;border:0;border-radius:0;padding:0;max-width:285px;text-align:left;font-family:"DM Sans",system-ui,sans-serif}
 .ov.login h2{margin:0;font-size:22px;font-weight:500;line-height:1.25}
 .ov.login .num{margin:0;font-size:24px;font-weight:400;color:#8a8a8a;line-height:1.25}
 .ov.login .chg{display:inline-block;margin-top:6px;padding:0;background:none;border:0;font:500 13px "DM Sans",sans-serif;color:#e8d5a0;cursor:pointer;text-decoration:none}
+.ov.login .back{display:grid;place-items:center;width:44px;height:44px;margin:-10px 0 6px -12px;padding:0;background:none;border:0;cursor:pointer;color:#fff}
+.ov.login .back svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .ov.login .row{display:flex;align-items:center;gap:16px;margin-top:28px}
 .ov.login .row input{flex:1;min-width:0;margin:0;padding:8px 0;border:0;border-radius:0;background:none;text-align:left;font:400 22px "DM Sans",sans-serif;color:#fff;outline:0}
 .ov.login .row input::placeholder{color:#6f6f6f}
@@ -122,6 +139,7 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 <div class="ov login" id="paywall">
   <div class="box">
     <div id="s-phone">
+      <button class="back" id="b-back" type="button" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
       <h2>Mobile number</h2>
       <div class="row"><span class="cc">+91</span><input id="mobile" type="tel" inputmode="numeric" maxlength="10" autocomplete="tel-national" aria-label="Mobile number"></div>
       <button class="go" id="b-send">Get OTP</button>
@@ -137,13 +155,14 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
     </div>
     <div id="s-load" hidden><p>Starting your trial…</p></div>
     <div id="s-pick" hidden>
-      <h2>Pay ₹1 to start</h2>
-      <p>Pay using any UPI app. Refunded instantly.</p>
-      <button class="app on" data-app="paytm"><i><img src="/logos/paytm.svg" alt="" width="48" height="16"></i><span>Paytm<small>Recommended for Paytm users</small></span><em></em></button>
-      <button class="app" data-app="phonepe"><i><img src="/logos/phonepe.svg" alt="" width="48" height="16"></i><span>PhonePe</span><em></em></button>
-      <button class="app" data-app="gpay"><i><img src="/logos/gpay.svg" alt="" width="48" height="16"></i><span>Google Pay</span><em></em></button>
-      <button class="cta" id="b-app">Pay ₹1 via Paytm</button>
-      <button class="lnk" id="b-qr">Pay via QR code</button>
+      <div class="ph-head"><button type="button" id="b-pick-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><div><h2>Payments</h2><p class="amt">Amount : ₹1</p></div></div>
+      <div class="sec">UPI <span class="fast"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>Fastest</span></div>
+      <p class="ban">88.5% of our users prefer paying via UPI</p>
+      <button class="app" data-app="phonepe"><i><span class="crop" style="width:52px;height:52px"><img src="/logos/phonepe.svg" alt="" style="height:52px;width:auto"></span></i><span>PhonePe</span><b>›</b></button>
+      <button class="app" data-app="gpay"><i><span class="crop" style="width:30px;height:30px"><img src="/logos/gpay.svg" alt="" style="height:30px;width:auto"></span></i><span>Google Pay</span><b>›</b></button>
+      <button class="app" data-app="paytm"><i><img src="/logos/paytm.svg" alt="" style="width:38px;height:auto"></i><span>Paytm</span><b>›</b></button>
+      <div class="sec">Pay via QR code</div>
+      <button class="app" id="b-qr"><i><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#111" stroke-width="1.6"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z"/></svg></i><span>Scan QR Code</span><b>›</b></button>
     </div>
     <div id="s-wait" hidden>
       <div class="hg" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M16 8h32M16 56h32M18 8c0 14 10 18 14 24-4 6-14 10-14 24M46 8c0 14-10 18-14 24 4 6 14 10 14 24"/><path d="M25 15h14l-7 11zM23 53c4-9 14-9 18 0z" fill="currentColor" stroke="none" style="fill:var(--gold)"/></svg></div>
@@ -208,8 +227,8 @@ function api(path,body,auth,method){
       return j})});
 }
 function show(id){["s-phone","s-otp","s-load","s-soon","s-pick","s-wait","s-ok","s-nf","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});
-  var lg=id==="s-phone"||id==="s-otp",fl=id==="s-wait"||id==="s-ok"||id==="s-done";
-  $("paywall").classList.toggle("login",lg);$("paywall").classList.toggle("full",fl);$("b-close").hidden=lg||fl;err("")}
+  var lg=id==="s-phone"||id==="s-otp",fl=id==="s-wait"||id==="s-ok"||id==="s-done",pg=id==="s-pick";
+  $("paywall").classList.toggle("login",lg);$("paywall").classList.toggle("full",fl);$("paywall").classList.toggle("pay",pg);$("b-close").hidden=lg||fl||pg;err("")}
 function err(m){$("err").textContent=m;$("err").hidden=!m}
 function busy(b,on){b.disabled=on;b.style.opacity=on?.6:1}
 function run(btn,fn){busy(btn,true);err("");return Promise.resolve().then(fn).catch(function(e){err(e.message)}).then(function(){busy(btn,false)})}
@@ -222,7 +241,7 @@ function sendOtp(resend){
   mobile=m;
   if(resend!==true){
     $("otp-to").textContent="(+91) "+m.slice(0,5)+" "+m.slice(5);$("otp").value="";
-    show("s-otp");$("otp").focus();countdown(30);
+    editingNumber=false;show("s-otp");$("otp").focus();countdown(30);
   }
   return api("/web-service/v1/public/request-otp",{mobile:m}).then(function(){if(resend===true)countdown(30)},function(e){
     if(resend===true){err(e.message);return}
@@ -248,7 +267,7 @@ function verifyOtp(){
     token=r.token;userId=r.userDetails&&r.userDetails.id;
     if(!token||!userId)throw new Error("Login failed. Please try again.");
     try{sessionStorage.setItem("zt",JSON.stringify({token:token,userId:userId,mobile:mobile}))}catch(e){}
-    return next()});
+    return next()}).catch(function(e){$("otp").value="";$("otp").focus();throw e});
 }
 // after login go straight to payment: app picker on mobile, QR on desktop
 function next(){
@@ -338,27 +357,41 @@ function poll(q){
   pollNow=check;tick();
 }
 $("b-send").onclick=function(){run(this,sendOtp)};
-document.querySelectorAll(".app").forEach(function(b){b.onclick=function(){
-  sel=b.dataset.app;document.querySelectorAll(".app").forEach(function(x){x.classList.toggle("on",x===b)});
-  $("b-app").textContent="Pay ₹1 via "+APPS[sel].n}});
-$("b-app").onclick=function(){run(this,payApp)};
+// Tapping an app row pays with it straight away (no radio + Pay button)
+document.querySelectorAll(".app[data-app]").forEach(function(b){b.onclick=function(){sel=b.dataset.app;run(b,payApp)}});
+$("b-pick-back").onclick=function(){location.hash=""};
 $("b-qr").onclick=function(){run(this,startPayment)};
 $("b-other").onclick=function(){show("s-pick")};
 $("b-wait-other").onclick=function(){clearTimeout(pollTimer);pollNow=null;show("s-pick")};
 $("b-nfx").onclick=function(){location.hash=""};
 $("b-verify").onclick=function(){run(this,verifyOtp)};
-$("b-change").onclick=function(){clearInterval(cd);show("s-phone");$("mobile").focus()};
+var editingNumber=false;
+$("b-change").onclick=function(){editingNumber=true;show("s-phone");$("mobile").focus()};
+// Back: while editing the number, return to the OTP already sent; on the first phone screen, close the sheet
+$("b-back").onclick=function(){
+  if(editingNumber){editingNumber=false;show("s-otp");$("otp").focus();return}
+  location.hash="";
+};
 // 10 digits typed, pasted or autofilled: send the OTP without another tap
 $("mobile").oninput=function(){
   this.value=this.value.replace(/\D/g,"");
   if(this.value.length===10&&!$("b-send").disabled)$("b-send").click();
+};
+// 4 digits typed, pasted or filled from the SMS: submit without another tap
+$("otp").oninput=function(){
+  this.value=this.value.replace(/\D/g,"");
+  if(this.value.length===4&&!$("b-verify").disabled)$("b-verify").click();
 };
 [["mobile","b-send"],["otp","b-verify"]].forEach(function(p){$(p[0]).onkeydown=function(e){if(e.key==="Enter")$(p[1]).click()}});
 // restore the login after a refresh (sessionStorage: survives reload, dies with the tab)
 try{var sv=JSON.parse(sessionStorage.getItem("zt")||"{}");
   if(sv.token&&sv.userId&&sv.mobile){token=sv.token;userId=sv.userId;mobile=sv.mobile}}catch(e){}
 // already logged in: the main button goes straight to payment (no phone/OTP, no second tap)
-$("b-main").onclick=function(){if(token)Promise.resolve(next()).catch(function(e){err(e.message)})};
+$("b-main").onclick=function(e){
+  if(token){Promise.resolve(next()).catch(function(e){err(e.message)});return}
+  // logged out: open the sheet and focus the number inside this tap, or iOS will not raise the keyboard
+  e.preventDefault();location.hash="paywall";$("mobile").focus();
+};
 // refresh with the sheet open: mobile resumes at the picker; desktop closes it so one tap starts payment
 if(token&&location.hash==="#paywall"){isMob&&PAYMENTS_LIVE?Promise.resolve(next()).catch(function(e){err(e.message)}):location.hash=""}
 $("b-close").onclick=function(e){e.preventDefault();clearTimeout(pollTimer);pollNow=null;location.hash=""};
