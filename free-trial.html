@@ -169,6 +169,7 @@ function verifyOtp(){
   return api("/web-service/v1/public/verify-otp",{mobile:mobile,otp:o}).then(function(r){
     token=r.token;userId=r.userDetails&&r.userDetails.id;
     if(!token||!userId)throw new Error("Login failed. Please try again.");
+    try{sessionStorage.setItem("zt",JSON.stringify({token:token,userId:userId,mobile:mobile}))}catch(e){}
     $("in-as").textContent="+91 "+mobile;show("s-in")});
 }
 var qdata=null,sel="paytm",launched=false;
@@ -203,7 +204,7 @@ function payApp(){
     var link=q.qrCodeContent||"";
     if(!link)throw new Error("Couldn't open a UPI app. Try the QR code.");
     if(sel!=="paytm"&&!/^upi:/i.test(link))throw new Error("That app isn't supported for this payment yet. Choose Paytm or QR.");
-    try{sessionStorage.setItem("zt",JSON.stringify({token:token,userId:userId,mandateId:q.internalOrderId}))}catch(e){}
+    try{sessionStorage.setItem("zt",JSON.stringify({token:token,userId:userId,mobile:mobile,mandateId:q.internalOrderId}))}catch(e){}
     launched=false;document.addEventListener("visibilitychange",onVis);
     location.href=appLink(link,APPS[sel]);
     setTimeout(function(){if(!launched){document.removeEventListener("visibilitychange",onVis);show("s-nf")}},2500);
@@ -232,6 +233,9 @@ $("b-qr").onclick=function(){run(this,startPayment)};
 $("b-other").onclick=function(){show("s-pick")};
 $("b-nfx").onclick=function(){show("s-in")};
 $("b-verify").onclick=function(){run(this,verifyOtp)};
+// restore the login after a refresh (sessionStorage: survives reload, dies with the tab)
+try{var sv=JSON.parse(sessionStorage.getItem("zt")||"{}");
+  if(sv.token&&sv.userId&&sv.mobile){token=sv.token;userId=sv.userId;mobile=sv.mobile;$("in-as").textContent="+91 "+mobile;show("s-in")}}catch(e){}
 $("b-close").onclick=function(e){e.preventDefault();clearTimeout(pollTimer);location.hash=""};
 })();
 </script>
