@@ -134,6 +134,7 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
     <a class="lnk" href="#" id="b-close">Close</a>
   </div>
 </div>
+<script src="/meta-pixel.js"></script>
 <script>
 (function(){
 // Backend base URL. The /web-service/v1 routes are in zenaclub-backend.
@@ -178,7 +179,9 @@ var APPS={paytm:{n:"Paytm",pkg:"net.one97.paytm",ios:"paytmmp"},phonepe:{n:"Phon
 // initiate + QR once per page; the mandate and txnToken are reused if the user switches app.
 function getPayment(){
   if(qdata)return Promise.resolve(qdata);
-  return api("/web-service/v1/auth/subscription/initiate",{method:"upi"},true).then(function(r){
+  var ev=zmeta.uuid(),mm=zmeta.match();
+  zmeta.track("InitiateCheckout",100,ev);
+  return api("/web-service/v1/auth/subscription/initiate",{method:"upi",metaEventId:ev,fbc:mm.fbc,fbp:mm.fbp,sourceUrl:mm.sourceUrl},true).then(function(r){
     if(!r.paytmTxnToken)throw new Error("Payment is unavailable right now. Please try again later.");
     return api("/web-service/v1/auth/subscription/paytm/qr",{mandateId:r.mandateId,txnToken:r.paytmTxnToken},true)
   }).then(function(q){qdata=q;return q});
@@ -215,7 +218,7 @@ function poll(q){
   (function tick(){
     pollTimer=setTimeout(function(){
       api("/web-service/v1/auth/subscription/paytm/qr/status?mandateId="+encodeURIComponent(q.internalOrderId),null,true,"GET").then(function(s){
-        if(s.isPaid){show("s-done");return}
+        if(s.isPaid){if(s.isTrial)zmeta.track("StartTrial",s.amount||100,q.internalOrderId);show("s-done");return}
         if(s.isFinal||Date.now()>end){$("pay-wait").textContent="";err("Payment didn't complete. Close and try again.");return}
         tick()
       }).catch(function(){Date.now()>end?err("Couldn't confirm payment. Please try again."):tick()});

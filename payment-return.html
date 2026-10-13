@@ -22,6 +22,7 @@ h1{font-size:22px;margin:0 0 8px}p{color:var(--mute);margin:0 0 24px;max-width:3
 <p id="m">Checking status…</p>
 <button class="cta" id="chk">Check Status</button>
 <a class="cta" id="retry" href="/free-trial#paywall" hidden>Try again</a>
+<script src="/meta-pixel.js"></script>
 <script>
 (function(){
 var API="https://apis.zenaclub.com";
@@ -37,6 +38,7 @@ function check(){
   return fetch(API+"/web-service/v1/auth/subscription/paytm/qr/status?mandateId="+encodeURIComponent(id),
     {headers:{"X-TENANT":"ZENA","device-id":"web","Authorization":"Bearer "+st.token,"user-id":st.userId}})
   .then(function(r){return r.json()}).then(function(s){
+    if(s.isPaid){if(s.isTrial)zmeta.track("StartTrial",s.amount||100,id)}
     if(s.isPaid)return done("✓","You're in!","Your free trial has started. Open the Zena app and log in with this number.");
     if(s.isFinal)return done("✕","Payment didn't complete","No money was taken, or it will be refunded. Please try again.",true);
     if(Date.now()>end)return done("⏳","Still waiting","We haven't heard from your bank yet. If you paid, your trial will start shortly; you can also check in the Zena app.");
