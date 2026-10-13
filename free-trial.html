@@ -59,6 +59,8 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 .ov.login .row{display:flex;align-items:center;gap:16px;margin-top:28px}
 .ov.login .row input{flex:1;min-width:0;margin:0;padding:8px 0;border:0;border-radius:0;background:none;text-align:left;font:400 22px "DM Sans",sans-serif;color:#fff;outline:0}
 .ov.login .row input::placeholder{color:#6f6f6f}
+/* Chrome/Safari autofill paints a pale-blue box with dark text; keep it black with white text */
+.ov.login .row input:-webkit-autofill,.ov.login .row input:autofill{-webkit-text-fill-color:#fff;caret-color:#fff;-webkit-box-shadow:0 0 0 1000px #000 inset;box-shadow:0 0 0 1000px #000 inset;transition:background-color 9999s}
 .ov.login .cc{flex:none;padding:8px 8px 6px 0;border-bottom:1px solid #fff;font-size:17px;color:#fff}
 .ov.login .tmr{flex:none;font-size:13px;font-weight:600;color:#fff}
 .ov.login .tmr button{background:none;border:0;padding:0;font:600 13px "DM Sans",sans-serif;color:#e8d5a0;cursor:pointer}
@@ -268,6 +270,11 @@ $("b-other").onclick=function(){show("s-pick")};
 $("b-nfx").onclick=function(){location.hash=""};
 $("b-verify").onclick=function(){run(this,verifyOtp)};
 $("b-change").onclick=function(){clearInterval(cd);show("s-phone");$("mobile").focus()};
+// 10 digits typed, pasted or autofilled: send the OTP without another tap
+$("mobile").oninput=function(){
+  this.value=this.value.replace(/\D/g,"");
+  if(this.value.length===10&&!$("b-send").disabled)$("b-send").click();
+};
 [["mobile","b-send"],["otp","b-verify"]].forEach(function(p){$(p[0]).onkeydown=function(e){if(e.key==="Enter")$(p[1]).click()}});
 // restore the login after a refresh (sessionStorage: survives reload, dies with the tab)
 try{var sv=JSON.parse(sessionStorage.getItem("zt")||"{}");
