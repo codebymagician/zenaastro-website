@@ -12,7 +12,7 @@
 :root{--bg:#111;--card:#1c1c1c;--fg:#fff;--mute:#b9b4a8;--gold:#e9d8a6;--gold2:#8c7c4f;--line:#3a3a3a}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-.wrap{max-width:480px;margin:0 auto;padding:27px 16px 40px;background:linear-gradient(#161616,var(--bg) 300px)}
+.wrap{max-width:480px;margin:0 auto;padding:27px 16px 140px;background:linear-gradient(#161616,var(--bg) 300px)}
 .hero{position:relative;height:200px;border-radius:24px;overflow:hidden;background:#e2b96a}
 .hero img{width:100%;height:100%;object-fit:cover;object-position:50% 20%;display:block}
 .eyebrow{text-align:center;color:#c9b98a;font-weight:600;font-size:15px;letter-spacing:.5px;margin:22px 0 14px}
@@ -33,6 +33,8 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 .users:before,.users:after{content:"";height:1px;width:60px;background:linear-gradient(90deg,transparent,#555)}
 .users:after{transform:scaleX(-1)}
 .cta{display:block;text-align:center;padding:16px;border-radius:999px;border:1px solid #d9c98f;color:#1a1a1a;font-weight:700;font-size:18px;text-decoration:none;background:radial-gradient(ellipse at 50% 0,#c9b98a,#7d6f47 80%)}
+.bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:5;width:100%;max-width:480px;padding:28px 16px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(rgba(17,17,17,0),var(--bg) 40%)}
+.bar .note{margin:10px 0 0}
 .note{text-align:center;font-size:13px;margin:14px 0 0}
 .ov{z-index:100;position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;padding:20px}
 .ov:target{display:flex}
@@ -48,7 +50,8 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 #qr{width:200px;height:200px;background:#fff;border-radius:12px;padding:8px;margin:0 auto 14px;display:block}
 .app{display:flex;align-items:center;gap:14px;width:100%;padding:12px;margin-bottom:10px;border-radius:14px;border:1px solid var(--line);background:#111;color:var(--fg);font:inherit;text-align:left;cursor:pointer}
 .app.on{border-color:var(--gold)}
-.app i{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:700;background:#2c2618;color:var(--gold)}
+.app i{flex:none;width:64px;height:40px;border-radius:10px;display:grid;place-items:center;background:#fff}
+.app i img{width:48px;height:auto;display:block}
 .app em{margin-left:auto;width:18px;height:18px;border-radius:50%;border:2px solid var(--line)}.app.on em{background:var(--gold);border-color:var(--gold)}
 .app small{display:block;color:#7fd08a;font-size:12px}
 .ov.login{background:#000;align-items:flex-start;padding:40px 16px}
@@ -92,6 +95,8 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
   </div>
 
   <div class="users">What users say</div>
+</div>
+<div class="bar">
   <a class="cta" id="b-main" href="#paywall">Start FREE trial for ₹1</a>
   <p class="note">We'll remind you before autopay. Cancel anytime.</p>
 </div>
@@ -116,9 +121,9 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
     <div id="s-pick" hidden>
       <h2>Pay ₹1 to start</h2>
       <p>Pay using any UPI app. Refunded instantly.</p>
-      <button class="app on" data-app="paytm"><i>P</i><span>Paytm<small>Recommended for Paytm users</small></span><em></em></button>
-      <button class="app" data-app="phonepe"><i>Pe</i><span>PhonePe</span><em></em></button>
-      <button class="app" data-app="gpay"><i>G</i><span>Google Pay</span><em></em></button>
+      <button class="app on" data-app="paytm"><i><img src="/logos/paytm.svg" alt="" width="48" height="16"></i><span>Paytm<small>Recommended for Paytm users</small></span><em></em></button>
+      <button class="app" data-app="phonepe"><i><img src="/logos/phonepe.svg" alt="" width="48" height="16"></i><span>PhonePe</span><em></em></button>
+      <button class="app" data-app="gpay"><i><img src="/logos/gpay.svg" alt="" width="48" height="16"></i><span>Google Pay</span><em></em></button>
       <button class="cta" id="b-app">Pay ₹1 via Paytm</button>
       <button class="lnk" id="b-qr">Pay via QR code</button>
     </div>
@@ -178,12 +183,20 @@ function err(m){$("err").textContent=m;$("err").hidden=!m}
 function busy(b,on){b.disabled=on;b.style.opacity=on?.6:1}
 function run(btn,fn){busy(btn,true);err("");return Promise.resolve().then(fn).catch(function(e){err(e.message)}).then(function(){busy(btn,false)})}
 
-function sendOtp(){
-  var m=$("mobile").value.replace(/\D/g,"");
+// Switches to the OTP screen and focuses its field BEFORE the request goes out: iOS only raises the
+// keyboard for focus() called inside the tap/keystroke itself, not after an async reply.
+function sendOtp(resend){
+  var m=resend===true?mobile:$("mobile").value.replace(/\D/g,"");
   if(m.length!==10){err("Enter a valid 10-digit mobile number.");return}
   mobile=m;
-  return api("/web-service/v1/public/request-otp",{mobile:m}).then(function(){
-    $("otp-to").textContent="(+91) "+m.slice(0,5)+" "+m.slice(5);$("otp").value="";show("s-otp");$("otp").focus();countdown(30)});
+  if(resend!==true){
+    $("otp-to").textContent="(+91) "+m.slice(0,5)+" "+m.slice(5);$("otp").value="";
+    show("s-otp");$("otp").focus();countdown(30);
+  }
+  return api("/web-service/v1/public/request-otp",{mobile:m}).then(function(){if(resend===true)countdown(30)},function(e){
+    if(resend===true){err(e.message);return}
+    clearInterval(cd);show("s-phone");err(e.message);$("mobile").focus();
+  });
 }
 // "30 sec" countdown on the OTP screen; at zero it turns into a Resend link
 var cd=null;
@@ -193,7 +206,7 @@ function countdown(n){
     if(n>0){$("tmr").textContent=n+" sec";n--;return}
     clearInterval(cd);
     $("tmr").innerHTML='<button id="b-resend" type="button">Resend OTP</button>';
-    $("b-resend").onclick=function(){run(this,sendOtp)};
+    $("b-resend").onclick=function(){run(this,function(){return sendOtp(true)})};
   }
   tick();cd=setInterval(tick,1000);
 }
