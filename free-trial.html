@@ -6,6 +6,8 @@
 <meta name="theme-color" content="#111111">
 <meta name="robots" content="noindex">
 <title>Start your free trial — Zena</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#111;--card:#1c1c1c;--fg:#fff;--mute:#b9b4a8;--gold:#e9d8a6;--gold2:#8c7c4f;--line:#3a3a3a}
 *{box-sizing:border-box}
@@ -32,7 +34,7 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 .users:after{transform:scaleX(-1)}
 .cta{display:block;text-align:center;padding:16px;border-radius:999px;border:1px solid #d9c98f;color:#1a1a1a;font-weight:700;font-size:18px;text-decoration:none;background:radial-gradient(ellipse at 50% 0,#c9b98a,#7d6f47 80%)}
 .note{text-align:center;font-size:13px;margin:14px 0 0}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;padding:20px}
+.ov{z-index:100;position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;padding:20px}
 .ov:target{display:flex}
 .box{max-width:340px;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:28px 24px;text-align:center}
 .box h2{margin:8px 0;font-size:20px}.box p{color:var(--mute);margin:0 0 20px}
@@ -49,6 +51,21 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 .app i{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:700;background:#2c2618;color:var(--gold)}
 .app em{margin-left:auto;width:18px;height:18px;border-radius:50%;border:2px solid var(--line)}.app.on em{background:var(--gold);border-color:var(--gold)}
 .app small{display:block;color:#7fd08a;font-size:12px}
+.ov.login{background:#000;align-items:flex-start;padding:40px 16px}
+.ov.login .box{background:none;border:0;border-radius:0;padding:0;max-width:285px;text-align:left;font-family:"DM Sans",system-ui,sans-serif}
+.ov.login h2{margin:0;font-size:22px;font-weight:500;line-height:1.25}
+.ov.login .num{margin:0;font-size:24px;font-weight:400;color:#8a8a8a;line-height:1.25}
+.ov.login .chg{display:inline-block;margin-top:6px;padding:0;background:none;border:0;font:500 13px "DM Sans",sans-serif;color:#e8d5a0;cursor:pointer;text-decoration:none}
+.ov.login .row{display:flex;align-items:center;gap:16px;margin-top:28px}
+.ov.login .row input{flex:1;min-width:0;margin:0;padding:8px 0;border:0;border-radius:0;background:none;text-align:left;font:400 22px "DM Sans",sans-serif;color:#fff;outline:0}
+.ov.login .row input::placeholder{color:#6f6f6f}
+.ov.login .cc{flex:none;padding:8px 8px 6px 0;border-bottom:1px solid #fff;font-size:17px;color:#fff}
+.ov.login .tmr{flex:none;font-size:13px;font-weight:600;color:#fff}
+.ov.login .tmr button{background:none;border:0;padding:0;font:600 13px "DM Sans",sans-serif;color:#e8d5a0;cursor:pointer}
+.ov.login .go{display:block;width:100%;height:50px;margin-top:56px;border:0;border-radius:6px;background:#1c1c1c;color:#e6e6e6;font:600 15px "DM Sans",sans-serif;cursor:pointer}
+.ov.login .terms{margin:20px 0 0;font-size:11px;line-height:1.5;color:#b7b7b7;text-align:center}
+.ov.login .terms a{color:#fff;text-decoration:underline}
+.ov.login .err{text-align:left;margin-top:12px}
 </style>
 </head>
 <body>
@@ -77,20 +94,21 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
   <p class="note">We'll remind you before autopay. Cancel anytime.</p>
 </div>
 
-<div class="ov" id="paywall">
+<div class="ov login" id="paywall">
   <div class="box">
     <div id="s-phone">
-      <h2>Verify your number</h2>
-      <p>We'll send a 4-digit code by SMS.</p>
-      <div class="ph"><span>+91</span><input id="mobile" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit mobile number" autocomplete="tel-national"></div>
-      <button class="cta" id="b-send">Send code</button>
+      <h2>Mobile number</h2>
+      <div class="row"><span class="cc">+91</span><input id="mobile" type="tel" inputmode="numeric" maxlength="10" autocomplete="tel-national" aria-label="Mobile number"></div>
+      <button class="go" id="b-send">Get OTP</button>
+      <p class="terms">By continuing, you confirm you're 18+ and accept our <a href="/terms-and-conditions/">Terms of Use</a> &amp; <a href="/privacy-policy/">Privacy Policy</a></p>
     </div>
     <div id="s-otp" hidden>
-      <h2>Enter the code</h2>
-      <p id="otp-to"></p>
-      <input id="otp" type="tel" inputmode="numeric" maxlength="4" placeholder="• • • •" autocomplete="one-time-code">
-      <button class="cta" id="b-verify">Verify &amp; continue</button>
-      <button class="lnk" id="b-resend">Resend code</button>
+      <h2>OTP sent to</h2>
+      <p class="num" id="otp-to"></p>
+      <button class="chg" id="b-change">Change Number</button>
+      <div class="row"><input id="otp" type="tel" inputmode="numeric" maxlength="4" placeholder="Enter OTP" autocomplete="one-time-code" aria-label="Enter OTP"><span class="tmr" id="tmr"></span></div>
+      <button class="go" id="b-verify">Submit</button>
+      <p class="terms">By continuing, you confirm you're 18+ and accept our <a href="/terms-and-conditions/">Terms of Use</a> &amp; <a href="/privacy-policy/">Privacy Policy</a></p>
     </div>
     <div id="s-load" hidden><p>Starting your trial…</p></div>
     <div id="s-pick" hidden>
@@ -126,7 +144,7 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
       <p>Your free trial has started. Open the Zena app and log in with this number.</p>
     </div>
     <div id="err" class="err" role="alert" hidden></div>
-    <a class="lnk" href="#" id="b-close">Close</a>
+    <a class="lnk" href="#" id="b-close" hidden>Close</a>
   </div>
 </div>
 <script src="/meta-pixel.js"></script>
@@ -147,7 +165,8 @@ function api(path,body,auth,method){
       if(!r.ok)throw new Error(j.error||"Something went wrong. Please try again.");
       return j})});
 }
-function show(id){["s-phone","s-otp","s-load","s-soon","s-pick","s-nf","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});err("")}
+function show(id){["s-phone","s-otp","s-load","s-soon","s-pick","s-nf","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});
+  var lg=id==="s-phone"||id==="s-otp";$("paywall").classList.toggle("login",lg);$("b-close").hidden=lg;err("")}
 function err(m){$("err").textContent=m;$("err").hidden=!m}
 function busy(b,on){b.disabled=on;b.style.opacity=on?.6:1}
 function run(btn,fn){busy(btn,true);err("");return Promise.resolve().then(fn).catch(function(e){err(e.message)}).then(function(){busy(btn,false)})}
@@ -157,7 +176,19 @@ function sendOtp(){
   if(m.length!==10){err("Enter a valid 10-digit mobile number.");return}
   mobile=m;
   return api("/web-service/v1/public/request-otp",{mobile:m}).then(function(){
-    $("otp-to").textContent="Sent to +91 "+m;show("s-otp");$("otp").focus()});
+    $("otp-to").textContent="(+91) "+m.slice(0,5)+" "+m.slice(5);$("otp").value="";show("s-otp");$("otp").focus();countdown(30)});
+}
+// "30 sec" countdown on the OTP screen; at zero it turns into a Resend link
+var cd=null;
+function countdown(n){
+  clearInterval(cd);
+  function tick(){
+    if(n>0){$("tmr").textContent=n+" sec";n--;return}
+    clearInterval(cd);
+    $("tmr").innerHTML='<button id="b-resend" type="button">Resend OTP</button>';
+    $("b-resend").onclick=function(){run(this,sendOtp)};
+  }
+  tick();cd=setInterval(tick,1000);
 }
 function verifyOtp(){
   var o=$("otp").value.replace(/\D/g,"");
@@ -228,7 +259,6 @@ function poll(q){
   })();
 }
 $("b-send").onclick=function(){run(this,sendOtp)};
-$("b-resend").onclick=function(){run(this,sendOtp)};
 document.querySelectorAll(".app").forEach(function(b){b.onclick=function(){
   sel=b.dataset.app;document.querySelectorAll(".app").forEach(function(x){x.classList.toggle("on",x===b)});
   $("b-app").textContent="Pay ₹1 via "+APPS[sel].n}});
@@ -237,6 +267,8 @@ $("b-qr").onclick=function(){run(this,startPayment)};
 $("b-other").onclick=function(){show("s-pick")};
 $("b-nfx").onclick=function(){location.hash=""};
 $("b-verify").onclick=function(){run(this,verifyOtp)};
+$("b-change").onclick=function(){clearInterval(cd);show("s-phone");$("mobile").focus()};
+[["mobile","b-send"],["otp","b-verify"]].forEach(function(p){$(p[0]).onkeydown=function(e){if(e.key==="Enter")$(p[1]).click()}});
 // restore the login after a refresh (sessionStorage: survives reload, dies with the tab)
 try{var sv=JSON.parse(sessionStorage.getItem("zt")||"{}");
   if(sv.token&&sv.userId&&sv.mobile){token=sv.token;userId=sv.userId;mobile=sv.mobile}}catch(e){}
