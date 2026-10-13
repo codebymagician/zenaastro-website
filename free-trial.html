@@ -171,7 +171,12 @@ function verifyOtp(){
     token=r.token;userId=r.userDetails&&r.userDetails.id;
     if(!token||!userId)throw new Error("Login failed. Please try again.");
     try{sessionStorage.setItem("zt",JSON.stringify({token:token,userId:userId,mobile:mobile}))}catch(e){}
-    $("in-as").textContent="+91 "+mobile;show("s-in")});
+    return next()});
+}
+// after login go straight to payment: app picker on mobile, QR on desktop
+function next(){
+  if(!PAYMENTS_LIVE){show("s-soon");return}
+  return isMob?show("s-pick"):startPayment();
 }
 var qdata=null,sel="paytm",launched=false;
 var UA=navigator.userAgent,isAnd=/Android/i.test(UA),isMob=/Android|iPhone|iPad|iPod/i.test(UA);
@@ -227,7 +232,7 @@ function poll(q){
 }
 $("b-send").onclick=function(){run(this,sendOtp)};
 $("b-resend").onclick=function(){run(this,sendOtp)};
-$("b-start").onclick=function(){if(!PAYMENTS_LIVE){show("s-soon");return}isMob?show("s-pick"):run(this,startPayment)};
+$("b-start").onclick=function(){run(this,next)};
 document.querySelectorAll(".app").forEach(function(b){b.onclick=function(){
   sel=b.dataset.app;document.querySelectorAll(".app").forEach(function(x){x.classList.toggle("on",x===b)});
   $("b-app").textContent="Pay ₹1 via "+APPS[sel].n}});
@@ -238,7 +243,7 @@ $("b-nfx").onclick=function(){show("s-in")};
 $("b-verify").onclick=function(){run(this,verifyOtp)};
 // restore the login after a refresh (sessionStorage: survives reload, dies with the tab)
 try{var sv=JSON.parse(sessionStorage.getItem("zt")||"{}");
-  if(sv.token&&sv.userId&&sv.mobile){token=sv.token;userId=sv.userId;mobile=sv.mobile;$("in-as").textContent="+91 "+mobile;show("s-in")}}catch(e){}
+  if(sv.token&&sv.userId&&sv.mobile){token=sv.token;userId=sv.userId;mobile=sv.mobile;isMob&&PAYMENTS_LIVE?show("s-pick"):($("in-as").textContent="+91 "+mobile,show("s-in"))}}catch(e){}
 $("b-close").onclick=function(e){e.preventDefault();clearTimeout(pollTimer);location.hash=""};
 })();
 </script>
