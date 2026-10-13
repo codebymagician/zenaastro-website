@@ -122,6 +122,11 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
       <button class="cta" id="b-app">Pay ₹1 via Paytm</button>
       <button class="lnk" id="b-qr">Pay via QR code</button>
     </div>
+    <div id="s-wait" hidden>
+      <h2>Complete the payment</h2>
+      <p>Approve ₹1 in your UPI app. We'll confirm here automatically once it's done.</p>
+      <button class="lnk" id="b-wait-other">Choose another app</button>
+    </div>
     <div id="s-nf" hidden>
       <h2>Select a different UPI app</h2>
       <p>The app you selected isn't found on this device. Choose another UPI app to pay ₹1 and start your free trial.</p>
@@ -167,7 +172,7 @@ function api(path,body,auth,method){
       if(!r.ok)throw new Error(j.error||"Something went wrong. Please try again.");
       return j})});
 }
-function show(id){["s-phone","s-otp","s-load","s-soon","s-pick","s-nf","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});
+function show(id){["s-phone","s-otp","s-load","s-soon","s-pick","s-wait","s-nf","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});
   var lg=id==="s-phone"||id==="s-otp";$("paywall").classList.toggle("login",lg);$("b-close").hidden=lg;err("")}
 function err(m){$("err").textContent=m;$("err").hidden=!m}
 function busy(b,on){b.disabled=on;b.style.opacity=on?.6:1}
@@ -242,9 +247,11 @@ function appLink(link,a){
   if(isAnd)return "intent://"+m[1]+"#Intent;scheme=upi;package="+a.pkg+";end";
   return a.ios==="tez"?"tez://upi/"+m[1]:a.ios+"://"+m[1];
 }
+// Only Android can tell an app opened (the page goes hidden); iOS shows an "Open in <app>?" prompt
+// that can take longer than any timer, so there it just waits and polls.
 function onVis(){
   if(document.hidden){launched=true;return}
-  if(launched){document.removeEventListener("visibilitychange",onVis);location.href="/payment-return?status=processing&orderId="+encodeURIComponent(qdata.internalOrderId)}
+  if(pollNow)pollNow(); // back from the UPI app: check right away instead of waiting for the next tick
 }
 function payApp(){
   return getPayment().then(function(q){
@@ -252,22 +259,27 @@ function payApp(){
     if(!link)throw new Error("Couldn't open a UPI app. Try the QR code.");
     if(sel!=="paytm"&&!/^upi:/i.test(link))throw new Error("That app isn't supported for this payment yet. Choose Paytm or QR.");
     try{sessionStorage.setItem("zt",JSON.stringify({token:token,userId:userId,mobile:mobile,mandateId:q.internalOrderId}))}catch(e){}
-    launched=false;document.addEventListener("visibilitychange",onVis);
+    launched=false;document.removeEventListener("visibilitychange",onVis);document.addEventListener("visibilitychange",onVis);
     location.href=appLink(link,APPS[sel]);
-    setTimeout(function(){if(!launched){document.removeEventListener("visibilitychange",onVis);show("s-nf")}},2500);
+    show("s-wait");poll(q);
+    if(isAnd)setTimeout(function(){if(!launched&&!$("s-wait").hidden){clearTimeout(pollTimer);pollNow=null;show("s-nf")}},2500);
   });
 }
+var pollNow=null;
 function poll(q){
+  clearTimeout(pollTimer);
   var end=Date.now()+(q.maxPollingDurationMs||180000);
-  (function tick(){
-    pollTimer=setTimeout(function(){
-      api("/web-service/v1/auth/subscription/paytm/qr/status?mandateId="+encodeURIComponent(q.internalOrderId),null,true,"GET").then(function(s){
-        if(s.isPaid){if(s.isTrial)zmeta.track("StartTrial",s.amount||100,q.internalOrderId);show("s-done");return}
-        if(s.isFinal||Date.now()>end){$("pay-wait").textContent="";err("Payment didn't complete. Close and try again.");return}
-        tick()
-      }).catch(function(){Date.now()>end?err("Couldn't confirm payment. Please try again."):tick()});
-    },q.pollingIntervalMs||3000);
-  })();
+  function stop(){pollNow=null}
+  function tick(){pollTimer=setTimeout(check,q.pollingIntervalMs||3000)}
+  function check(){
+    clearTimeout(pollTimer);
+    api("/web-service/v1/auth/subscription/paytm/qr/status?mandateId="+encodeURIComponent(q.internalOrderId),null,true,"GET").then(function(s){
+      if(s.isPaid){stop();if(s.isTrial)zmeta.track("StartTrial",s.amount||100,q.internalOrderId);show("s-done");return}
+      if(s.isFinal||Date.now()>end){stop();$("pay-wait").textContent="";err("Payment didn't complete. Close and try again.");return}
+      tick()
+    }).catch(function(){if(Date.now()>end){stop();err("Couldn't confirm payment. Please try again.")}else tick()});
+  }
+  pollNow=check;tick();
 }
 $("b-send").onclick=function(){run(this,sendOtp)};
 document.querySelectorAll(".app").forEach(function(b){b.onclick=function(){
@@ -276,6 +288,7 @@ document.querySelectorAll(".app").forEach(function(b){b.onclick=function(){
 $("b-app").onclick=function(){run(this,payApp)};
 $("b-qr").onclick=function(){run(this,startPayment)};
 $("b-other").onclick=function(){show("s-pick")};
+$("b-wait-other").onclick=function(){clearTimeout(pollTimer);pollNow=null;show("s-pick")};
 $("b-nfx").onclick=function(){location.hash=""};
 $("b-verify").onclick=function(){run(this,verifyOtp)};
 $("b-change").onclick=function(){clearInterval(cd);show("s-phone");$("mobile").focus()};
@@ -292,7 +305,7 @@ try{var sv=JSON.parse(sessionStorage.getItem("zt")||"{}");
 $("b-main").onclick=function(){if(token)Promise.resolve(next()).catch(function(e){err(e.message)})};
 // refresh with the sheet open: mobile resumes at the picker; desktop closes it so one tap starts payment
 if(token&&location.hash==="#paywall"){isMob&&PAYMENTS_LIVE?Promise.resolve(next()).catch(function(e){err(e.message)}):location.hash=""}
-$("b-close").onclick=function(e){e.preventDefault();clearTimeout(pollTimer);location.hash=""};
+$("b-close").onclick=function(e){e.preventDefault();clearTimeout(pollTimer);pollNow=null;location.hash=""};
 })();
 </script>
 </body>
