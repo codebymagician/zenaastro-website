@@ -139,7 +139,7 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 // Backend base URL. The /web-service/v1 routes are in zenaclub-backend.
 var API="https://apis.zenaclub.com";
 var $=function(i){return document.getElementById(i)};
-var PAYMENTS_LIVE=false; // flip to true once Paytm QR works; until then no payment API is called
+var PAYMENTS_LIVE=true;
 var token="",userId="",mobile="";   // in memory only, never persisted
 var pollTimer=null;
 
