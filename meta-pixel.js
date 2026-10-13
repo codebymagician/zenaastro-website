@@ -2,7 +2,7 @@
 // sent by zenaclub-backend with the same eventID, so Meta dedupes the pair.
 // Set PIXEL_ID to enable; while empty every call is a no-op.
 (function () {
-  var PIXEL_ID = "";
+  var PIXEL_ID = "1644183997222134";
   var on = !!PIXEL_ID;
 
   if (on && !window.fbq) {
