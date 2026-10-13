@@ -44,6 +44,11 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 .lnk{display:block;margin-top:14px;background:none;border:0;color:var(--mute);font-size:14px;cursor:pointer;text-decoration:underline}
 .err{color:#ff8a80;font-size:14px;margin-top:14px}.wait{font-size:14px}
 #qr{width:200px;height:200px;background:#fff;border-radius:12px;padding:8px;margin:0 auto 14px;display:block}
+.app{display:flex;align-items:center;gap:14px;width:100%;padding:12px;margin-bottom:10px;border-radius:14px;border:1px solid var(--line);background:#111;color:var(--fg);font:inherit;text-align:left;cursor:pointer}
+.app.on{border-color:var(--gold)}
+.app i{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:700;background:#2c2618;color:var(--gold)}
+.app em{margin-left:auto;width:18px;height:18px;border-radius:50%;border:2px solid var(--line)}.app.on em{background:var(--gold);border-color:var(--gold)}
+.app small{display:block;color:#7fd08a;font-size:12px}
 </style>
 </head>
 <body>
@@ -93,6 +98,21 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
       <p id="in-as"></p>
       <button class="cta" id="b-start">Start FREE trial for ₹1</button>
     </div>
+    <div id="s-pick" hidden>
+      <h2>Pay ₹1 to start</h2>
+      <p>Pay using any UPI app. Refunded instantly.</p>
+      <button class="app on" data-app="paytm"><i>P</i><span>Paytm<small>Recommended for Paytm users</small></span><em></em></button>
+      <button class="app" data-app="phonepe"><i>Pe</i><span>PhonePe</span><em></em></button>
+      <button class="app" data-app="gpay"><i>G</i><span>Google Pay</span><em></em></button>
+      <button class="cta" id="b-app">Pay ₹1 via Paytm</button>
+      <button class="lnk" id="b-qr">Pay via QR code</button>
+    </div>
+    <div id="s-nf" hidden>
+      <h2>Select a different UPI app</h2>
+      <p>The app you selected isn't found on this device. Choose another UPI app to pay ₹1 and start your free trial.</p>
+      <button class="cta" id="b-other">Select another app</button>
+      <button class="lnk" id="b-nfx">Cancel</button>
+    </div>
     <div id="s-soon" hidden>
       <div style="font-size:36px">🚧</div>
       <h2>Payment gateway yet to be integrated</h2>
@@ -131,7 +151,7 @@ function api(path,body,auth,method){
       if(!r.ok)throw new Error(j.error||"Something went wrong. Please try again.");
       return j})});
 }
-function show(id){["s-phone","s-otp","s-in","s-soon","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});err("")}
+function show(id){["s-phone","s-otp","s-in","s-soon","s-pick","s-nf","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});err("")}
 function err(m){$("err").textContent=m;$("err").hidden=!m}
 function busy(b,on){b.disabled=on;b.style.opacity=on?.6:1}
 function run(btn,fn){busy(btn,true);err("");return Promise.resolve().then(fn).catch(function(e){err(e.message)}).then(function(){busy(btn,false)})}
@@ -151,14 +171,43 @@ function verifyOtp(){
     if(!token||!userId)throw new Error("Login failed. Please try again.");
     $("in-as").textContent="+91 "+mobile;show("s-in")});
 }
-function startPayment(){
+var qdata=null,sel="paytm",launched=false;
+var UA=navigator.userAgent,isAnd=/Android/i.test(UA),isMob=/Android|iPhone|iPad|iPod/i.test(UA);
+var APPS={paytm:{n:"Paytm",pkg:"net.one97.paytm",ios:"paytmmp"},phonepe:{n:"PhonePe",pkg:"com.phonepe.app",ios:"phonepe"},gpay:{n:"Google Pay",pkg:"com.google.android.apps.nbu.paisa.user",ios:"tez"}};
+// initiate + QR once per page; the mandate and txnToken are reused if the user switches app.
+function getPayment(){
+  if(qdata)return Promise.resolve(qdata);
   return api("/web-service/v1/auth/subscription/initiate",{method:"upi"},true).then(function(r){
     if(!r.paytmTxnToken)throw new Error("Payment is unavailable right now. Please try again later.");
     return api("/web-service/v1/auth/subscription/paytm/qr",{mandateId:r.mandateId,txnToken:r.paytmTxnToken},true)
-  }).then(function(q){
+  }).then(function(q){qdata=q;return q});
+}
+function startPayment(){
+  return getPayment().then(function(q){
     if(q.qrCodeImageUrl){$("qr").src=q.qrCodeImageUrl;$("qr").hidden=false}
-    if(q.qrCodeContent){$("b-upi").href=q.qrCodeContent;$("b-upi").hidden=false}
+    if(q.qrCodeContent){$("b-upi").href=q.qrCodeContent;$("b-upi").hidden=!isMob}
     show("s-pay");poll(q)});
+}
+// ponytail: assumes the deep link is upi://...; any other scheme (e.g. paytmmp://) only opens its own app.
+function appLink(link,a){
+  var m=/^upi:\/\/(.*)$/i.exec(link);if(!m)return link;
+  if(isAnd)return "intent://"+m[1]+"#Intent;scheme=upi;package="+a.pkg+";end";
+  return a.ios==="tez"?"tez://upi/"+m[1]:a.ios+"://"+m[1];
+}
+function onVis(){
+  if(document.hidden){launched=true;return}
+  if(launched){document.removeEventListener("visibilitychange",onVis);location.href="/payment-return?status=processing&orderId="+encodeURIComponent(qdata.internalOrderId)}
+}
+function payApp(){
+  return getPayment().then(function(q){
+    var link=q.qrCodeContent||"";
+    if(!link)throw new Error("Couldn't open a UPI app. Try the QR code.");
+    if(sel!=="paytm"&&!/^upi:/i.test(link))throw new Error("That app isn't supported for this payment yet. Choose Paytm or QR.");
+    try{sessionStorage.setItem("zt",JSON.stringify({token:token,userId:userId,mandateId:q.internalOrderId}))}catch(e){}
+    launched=false;document.addEventListener("visibilitychange",onVis);
+    location.href=appLink(link,APPS[sel]);
+    setTimeout(function(){if(!launched){document.removeEventListener("visibilitychange",onVis);show("s-nf")}},2500);
+  });
 }
 function poll(q){
   var end=Date.now()+(q.maxPollingDurationMs||180000);
@@ -174,7 +223,14 @@ function poll(q){
 }
 $("b-send").onclick=function(){run(this,sendOtp)};
 $("b-resend").onclick=function(){run(this,sendOtp)};
-$("b-start").onclick=function(){if(!PAYMENTS_LIVE){show("s-soon");return}run(this,startPayment)};
+$("b-start").onclick=function(){if(!PAYMENTS_LIVE){show("s-soon");return}isMob?show("s-pick"):run(this,startPayment)};
+document.querySelectorAll(".app").forEach(function(b){b.onclick=function(){
+  sel=b.dataset.app;document.querySelectorAll(".app").forEach(function(x){x.classList.toggle("on",x===b)});
+  $("b-app").textContent="Pay ₹1 via "+APPS[sel].n}});
+$("b-app").onclick=function(){run(this,payApp)};
+$("b-qr").onclick=function(){run(this,startPayment)};
+$("b-other").onclick=function(){show("s-pick")};
+$("b-nfx").onclick=function(){show("s-in")};
 $("b-verify").onclick=function(){run(this,verifyOtp)};
 $("b-close").onclick=function(e){e.preventDefault();clearTimeout(pollTimer);location.hash=""};
 })();

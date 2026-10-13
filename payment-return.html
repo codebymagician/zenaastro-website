@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111111">
+<meta name="robots" content="noindex">
+<title>Payment status — Zena</title>
+<style>
+:root{--bg:#111;--fg:#fff;--mute:#b9b4a8;--gold:#e9d8a6}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;text-align:center;background:linear-gradient(#111 60%,#3a2410);color:var(--fg);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.ring{width:96px;height:96px;border-radius:50%;display:grid;place-items:center;font-size:40px;border:2px solid #7a4a1a;box-shadow:0 0 40px #7a4a1a66;margin-bottom:24px}
+h1{font-size:22px;margin:0 0 8px}p{color:var(--mute);margin:0 0 24px;max-width:320px}
+.cta{display:block;width:100%;max-width:340px;padding:16px;border-radius:999px;border:0;font:700 18px system-ui,sans-serif;color:#fff;background:linear-gradient(90deg,#b0245a,#e91e63);text-decoration:none;cursor:pointer}
+.cta[hidden]{display:none}
+</style>
+</head>
+<body>
+<div class="ring" id="ic">⏳</div>
+<h1 id="h">Payment Processing</h1>
+<p id="m">Checking status…</p>
+<button class="cta" id="chk">Check Status</button>
+<a class="cta" id="retry" href="/free-trial#paywall" hidden>Try again</a>
+<script>
+(function(){
+var API="https://apis.zenaclub.com";
+var $=function(i){return document.getElementById(i)};
+var st={};try{st=JSON.parse(sessionStorage.getItem("zt")||"{}")}catch(e){}
+var id=new URLSearchParams(location.search).get("orderId")||st.mandateId;
+var timer,end=Date.now()+180000;
+
+function done(icon,h,m,retry){clearTimeout(timer);$("ic").textContent=icon;$("h").textContent=h;$("m").textContent=m;$("chk").hidden=true;$("retry").hidden=!retry}
+function check(){
+  clearTimeout(timer);
+  if(!st.token||!id){done("ℹ️","Can't check from here","Your session ended. If you paid, your trial starts shortly. Open the Zena app and log in with your number.",true);return Promise.resolve()}
+  return fetch(API+"/web-service/v1/auth/subscription/paytm/qr/status?mandateId="+encodeURIComponent(id),
+    {headers:{"X-TENANT":"ZENA","device-id":"web","Authorization":"Bearer "+st.token,"user-id":st.userId}})
+  .then(function(r){return r.json()}).then(function(s){
+    if(s.isPaid)return done("✓","You're in!","Your free trial has started. Open the Zena app and log in with this number.");
+    if(s.isFinal)return done("✕","Payment didn't complete","No money was taken, or it will be refunded. Please try again.",true);
+    if(Date.now()>end)return done("⏳","Still waiting","We haven't heard from your bank yet. If you paid, your trial will start shortly; you can also check in the Zena app.");
+    timer=setTimeout(check,3000)
+  }).catch(function(){timer=setTimeout(check,3000)});
+}
+$("chk").onclick=check;
+check();
+})();
+</script>
+</body>
+</html>
