@@ -142,8 +142,8 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
     </div>
     <div id="s-done" hidden>
       <div style="font-size:36px">✓</div>
-      <h2>You're in!</h2>
-      <p>Your free trial has started. Open the Zena app and log in with this number.</p>
+      <h2 id="done-h">You're in!</h2>
+      <p id="done-p">Your free trial has started. Open the Zena app and log in with this number.</p>
     </div>
     <div id="err" class="err" role="alert" hidden></div>
     <a class="lnk" href="#" id="b-close" hidden>Close</a>
@@ -204,9 +204,18 @@ function verifyOtp(){
 // after login go straight to payment: app picker on mobile, QR on desktop
 function next(){
   if(!PAYMENTS_LIVE){show("s-soon");return}
-  if(isMob){show("s-pick");return}
   show("s-load");
-  return startPayment();
+  // already subscribed? then there is nothing to pay for. If the check itself fails, fall through
+  // to payment: initiate rejects a duplicate subscription server-side anyway.
+  return api("/web-service/v1/auth/subscription/status",null,true,"GET").then(function(r){return r.status==="ACTIVE"},function(){return false}).then(function(active){
+    if(active){
+      $("done-h").textContent="You're already subscribed";
+      $("done-p").textContent="Open the Zena app and log in with +91 "+mobile+".";
+      show("s-done");return;
+    }
+    if(isMob){show("s-pick");return}
+    return startPayment();
+  });
 }
 var qdata=null,sel="paytm",launched=false;
 var UA=navigator.userAgent,isAnd=/Android/i.test(UA),isMob=/Android|iPhone|iPad|iPod/i.test(UA);
@@ -282,7 +291,7 @@ try{var sv=JSON.parse(sessionStorage.getItem("zt")||"{}");
 // already logged in: the main button goes straight to payment (no phone/OTP, no second tap)
 $("b-main").onclick=function(){if(token)Promise.resolve(next()).catch(function(e){err(e.message)})};
 // refresh with the sheet open: mobile resumes at the picker; desktop closes it so one tap starts payment
-if(token&&location.hash==="#paywall"){isMob&&PAYMENTS_LIVE?show("s-pick"):location.hash=""}
+if(token&&location.hash==="#paywall"){isMob&&PAYMENTS_LIVE?Promise.resolve(next()).catch(function(e){err(e.message)}):location.hash=""}
 $("b-close").onclick=function(e){e.preventDefault();clearTimeout(pollTimer);location.hash=""};
 })();
 </script>
