@@ -71,6 +71,24 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 .ov.login .terms{margin:20px 0 0;font-size:11px;line-height:1.5;color:#b7b7b7;text-align:center}
 .ov.login .terms a{color:#fff;text-decoration:underline}
 .ov.login .err{text-align:left;margin-top:12px}
+.ov.full{background:#0e0e0e}
+.ov.full .box{background:none;border:0;border-radius:0;padding:0;max-width:340px;font-family:"DM Sans",system-ui,sans-serif}
+.ov.full h2{margin:0 0 10px;font-size:22px;font-weight:500;color:#fff}
+.ov.full p{margin:0 0 14px;font-size:14px;line-height:1.5;color:#a8a8a8}
+.ov.full .safe{font-size:13px;color:#7fd08a}
+.ov.full .hint{position:fixed;left:0;right:0;bottom:calc(24px + env(safe-area-inset-bottom));margin:0;font-size:12px;color:#6f6f6f}
+.ov.full .lg{display:block;width:72px;height:72px;margin:0 auto 22px;border-radius:18px}
+.ov.full .sm{margin-bottom:8px;font-size:13px;font-weight:600;color:#fff}
+.ov.full .big{margin:0 0 14px;font-size:30px;line-height:1.2;font-weight:600}
+.ov.full .cta{margin-top:26px}
+.ov.full .lnk{margin:14px auto 0}
+.hg{position:relative;width:140px;height:140px;margin:0 auto 28px;display:grid;place-items:center}
+.hg:before{content:"";position:absolute;inset:0;border-radius:50%;opacity:.5;animation:glow 2.4s ease-in-out infinite;background:repeating-conic-gradient(rgba(233,216,166,.55) 0 1.2deg,transparent 1.2deg 6deg);-webkit-mask:radial-gradient(circle,transparent 52%,#000 54%);mask:radial-gradient(circle,transparent 52%,#000 54%)}
+.hg svg{width:56px;height:56px;fill:none;stroke:var(--gold);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;animation:flip 3s ease-in-out infinite}
+.hg.ok svg{animation:none;stroke:#7fd08a}
+@keyframes flip{0%,40%{transform:rotate(0)}60%,100%{transform:rotate(180deg)}}
+@keyframes glow{50%{opacity:.9}}
+@media (prefers-reduced-motion:reduce){.hg:before,.hg svg{animation:none}}
 </style>
 </head>
 <body>
@@ -128,9 +146,17 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
       <button class="lnk" id="b-qr">Pay via QR code</button>
     </div>
     <div id="s-wait" hidden>
-      <h2>Complete the payment</h2>
-      <p>Approve ₹1 in your UPI app. We'll confirm here automatically once it's done.</p>
+      <div class="hg" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M16 8h32M16 56h32M18 8c0 14 10 18 14 24-4 6-14 10-14 24M46 8c0 14-10 18-14 24 4 6 14 10 14 24"/><path d="M25 15h14l-7 11zM23 53c4-9 14-9 18 0z" fill="currentColor" stroke="none" style="fill:var(--gold)"/></svg></div>
+      <h2 id="wait-h">Approve the payment in your UPI app</h2>
+      <p id="wait-p">Once approved, this page will update on its own.</p>
+      <p class="safe" id="wait-safe">✓ 100% safe and secure</p>
       <button class="lnk" id="b-wait-other">Choose another app</button>
+      <p class="hint">Do not go back or close the app</p>
+    </div>
+    <div id="s-ok" hidden>
+      <div class="hg ok" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="22"/><path d="M22 33l7 7 14-15"/></svg></div>
+      <h2>Payment Successful</h2>
+      <p>Your free trial has started</p>
     </div>
     <div id="s-nf" hidden>
       <h2>Select a different UPI app</h2>
@@ -151,9 +177,12 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
       <p id="pay-wait" class="wait">Waiting for payment…</p>
     </div>
     <div id="s-done" hidden>
-      <div style="font-size:36px">✓</div>
-      <h2 id="done-h">You're in!</h2>
-      <p id="done-p">Your free trial has started. Open the Zena app and log in with this number.</p>
+      <img class="lg" src="/logo.svg" alt="Zena" width="72" height="72">
+      <p class="sm">Your subscription is active!</p>
+      <h2 class="big">Continue on the Zena app</h2>
+      <p>Download the app and log in with the same mobile number to ask Zena anything, see your kundali, daily horoscope &amp; more.</p>
+      <a class="cta" id="b-app-dl" href="#" hidden>Download the app</a>
+      <p id="done-fallback">Open the Zena app and log in with this number.</p>
     </div>
     <div id="err" class="err" role="alert" hidden></div>
     <a class="lnk" href="#" id="b-close" hidden>Close</a>
@@ -165,6 +194,7 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 // Backend base URL. The /web-service/v1 routes are in zenaclub-backend.
 var API="https://apis.zenaclub.com";
 var $=function(i){return document.getElementById(i)};
+var APP={pkg:"",play:""}; // Zena Android package and Play Store listing URL; set both to enable "Download the app"
 var PAYMENTS_LIVE=true;
 var token="",userId="",mobile="";   // in memory only, never persisted
 var pollTimer=null;
@@ -177,8 +207,9 @@ function api(path,body,auth,method){
       if(!r.ok)throw new Error(j.error||"Something went wrong. Please try again.");
       return j})});
 }
-function show(id){["s-phone","s-otp","s-load","s-soon","s-pick","s-wait","s-nf","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});
-  var lg=id==="s-phone"||id==="s-otp";$("paywall").classList.toggle("login",lg);$("b-close").hidden=lg;err("")}
+function show(id){["s-phone","s-otp","s-load","s-soon","s-pick","s-wait","s-ok","s-nf","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});
+  var lg=id==="s-phone"||id==="s-otp",fl=id==="s-wait"||id==="s-ok"||id==="s-done";
+  $("paywall").classList.toggle("login",lg);$("paywall").classList.toggle("full",fl);$("b-close").hidden=lg||fl;err("")}
 function err(m){$("err").textContent=m;$("err").hidden=!m}
 function busy(b,on){b.disabled=on;b.style.opacity=on?.6:1}
 function run(btn,fn){busy(btn,true);err("");return Promise.resolve().then(fn).catch(function(e){err(e.message)}).then(function(){busy(btn,false)})}
@@ -227,9 +258,7 @@ function next(){
   // to payment: initiate rejects a duplicate subscription server-side anyway.
   return api("/web-service/v1/auth/subscription/status",null,true,"GET").then(function(r){return r.status==="ACTIVE"},function(){return false}).then(function(active){
     if(active){
-      $("done-h").textContent="You're already subscribed";
-      $("done-p").textContent="Open the Zena app and log in with +91 "+mobile+".";
-      show("s-done");return;
+      showDone();return;
     }
     if(isMob){show("s-pick");return}
     return startPayment();
@@ -262,8 +291,22 @@ function appLink(link,a){
 }
 // Only Android can tell an app opened (the page goes hidden); iOS shows an "Open in <app>?" prompt
 // that can take longer than any timer, so there it just waits and polls.
+// Download button: opens the app if installed (Android), otherwise the Play Store listing.
+function showDone(){
+  var a=$("b-app-dl");
+  a.hidden=!APP.play;$("done-fallback").hidden=!!APP.play;
+  if(APP.play)a.href=isAnd&&APP.pkg?"intent://#Intent;package="+APP.pkg+";action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;S.browser_fallback_url="+encodeURIComponent(APP.play)+";end":APP.play;
+  show("s-done");
+}
+// "Approve the payment" while the user is in the UPI app; "Processing Payment" once they are back and it isn't confirmed yet.
+function setWait(proc){
+  $("wait-h").textContent=proc?"Processing Payment":"Approve the payment in your UPI app";
+  $("wait-p").textContent=proc?"Please wait while we process your payment":"Once approved, this page will update on its own.";
+  $("wait-safe").hidden=proc;$("b-wait-other").hidden=proc;
+}
 function onVis(){
   if(document.hidden){launched=true;return}
+  if(launched&&!$("s-wait").hidden)setWait(true);
   if(pollNow)pollNow(); // back from the UPI app: check right away instead of waiting for the next tick
 }
 function payApp(){
@@ -274,7 +317,7 @@ function payApp(){
     try{sessionStorage.setItem("zt",JSON.stringify({token:token,userId:userId,mobile:mobile,mandateId:q.internalOrderId}))}catch(e){}
     launched=false;document.removeEventListener("visibilitychange",onVis);document.addEventListener("visibilitychange",onVis);
     location.href=appLink(link,APPS[sel]);
-    show("s-wait");poll(q);
+    setWait(false);show("s-wait");poll(q);
     if(isAnd)setTimeout(function(){if(!launched&&!$("s-wait").hidden){clearTimeout(pollTimer);pollNow=null;show("s-nf")}},2500);
   });
 }
@@ -287,7 +330,7 @@ function poll(q){
   function check(){
     clearTimeout(pollTimer);
     api("/web-service/v1/auth/subscription/paytm/qr/status?mandateId="+encodeURIComponent(q.internalOrderId),null,true,"GET").then(function(s){
-      if(s.isPaid){stop();if(s.isTrial)zmeta.track("StartTrial",s.amount||100,q.internalOrderId);show("s-done");return}
+      if(s.isPaid){stop();if(s.isTrial)zmeta.track("StartTrial",s.amount||100,q.internalOrderId);show("s-ok");setTimeout(showDone,1600);return}
       if(s.isFinal||Date.now()>end){stop();$("pay-wait").textContent="";err("Payment didn't complete. Close and try again.");return}
       tick()
     }).catch(function(){if(Date.now()>end){stop();err("Couldn't confirm payment. Please try again.")}else tick()});
