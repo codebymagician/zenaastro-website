@@ -73,7 +73,7 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
   </div>
 
   <div class="users">What users say</div>
-  <a class="cta" href="#paywall">Start FREE trial for ₹1</a>
+  <a class="cta" id="b-main" href="#paywall">Start FREE trial for ₹1</a>
   <p class="note">We'll remind you before autopay. Cancel anytime.</p>
 </div>
 
@@ -92,12 +92,7 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
       <button class="cta" id="b-verify">Verify &amp; continue</button>
       <button class="lnk" id="b-resend">Resend code</button>
     </div>
-    <div id="s-in" hidden>
-      <div style="font-size:36px">✓</div>
-      <h2>Logged in</h2>
-      <p id="in-as"></p>
-      <button class="cta" id="b-start">Start FREE trial for ₹1</button>
-    </div>
+    <div id="s-load" hidden><p>Starting your trial…</p></div>
     <div id="s-pick" hidden>
       <h2>Pay ₹1 to start</h2>
       <p>Pay using any UPI app. Refunded instantly.</p>
@@ -152,7 +147,7 @@ function api(path,body,auth,method){
       if(!r.ok)throw new Error(j.error||"Something went wrong. Please try again.");
       return j})});
 }
-function show(id){["s-phone","s-otp","s-in","s-soon","s-pick","s-nf","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});err("")}
+function show(id){["s-phone","s-otp","s-load","s-soon","s-pick","s-nf","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});err("")}
 function err(m){$("err").textContent=m;$("err").hidden=!m}
 function busy(b,on){b.disabled=on;b.style.opacity=on?.6:1}
 function run(btn,fn){busy(btn,true);err("");return Promise.resolve().then(fn).catch(function(e){err(e.message)}).then(function(){busy(btn,false)})}
@@ -176,7 +171,9 @@ function verifyOtp(){
 // after login go straight to payment: app picker on mobile, QR on desktop
 function next(){
   if(!PAYMENTS_LIVE){show("s-soon");return}
-  return isMob?show("s-pick"):startPayment();
+  if(isMob){show("s-pick");return}
+  show("s-load");
+  return startPayment();
 }
 var qdata=null,sel="paytm",launched=false;
 var UA=navigator.userAgent,isAnd=/Android/i.test(UA),isMob=/Android|iPhone|iPad|iPod/i.test(UA);
@@ -232,18 +229,21 @@ function poll(q){
 }
 $("b-send").onclick=function(){run(this,sendOtp)};
 $("b-resend").onclick=function(){run(this,sendOtp)};
-$("b-start").onclick=function(){run(this,next)};
 document.querySelectorAll(".app").forEach(function(b){b.onclick=function(){
   sel=b.dataset.app;document.querySelectorAll(".app").forEach(function(x){x.classList.toggle("on",x===b)});
   $("b-app").textContent="Pay ₹1 via "+APPS[sel].n}});
 $("b-app").onclick=function(){run(this,payApp)};
 $("b-qr").onclick=function(){run(this,startPayment)};
 $("b-other").onclick=function(){show("s-pick")};
-$("b-nfx").onclick=function(){show("s-in")};
+$("b-nfx").onclick=function(){location.hash=""};
 $("b-verify").onclick=function(){run(this,verifyOtp)};
 // restore the login after a refresh (sessionStorage: survives reload, dies with the tab)
 try{var sv=JSON.parse(sessionStorage.getItem("zt")||"{}");
-  if(sv.token&&sv.userId&&sv.mobile){token=sv.token;userId=sv.userId;mobile=sv.mobile;isMob&&PAYMENTS_LIVE?show("s-pick"):($("in-as").textContent="+91 "+mobile,show("s-in"))}}catch(e){}
+  if(sv.token&&sv.userId&&sv.mobile){token=sv.token;userId=sv.userId;mobile=sv.mobile}}catch(e){}
+// already logged in: the main button goes straight to payment (no phone/OTP, no second tap)
+$("b-main").onclick=function(){if(token)Promise.resolve(next()).catch(function(e){err(e.message)})};
+// refresh with the sheet open: mobile resumes at the picker; desktop closes it so one tap starts payment
+if(token&&location.hash==="#paywall"){isMob&&PAYMENTS_LIVE?show("s-pick"):location.hash=""}
 $("b-close").onclick=function(e){e.preventDefault();clearTimeout(pollTimer);location.hash=""};
 })();
 </script>
