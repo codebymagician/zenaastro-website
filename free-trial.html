@@ -207,6 +207,7 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
     <a class="lnk" href="#" id="b-close" hidden>Close</a>
   </div>
 </div>
+<script src="/attribution.js"></script>
 <script src="/meta-pixel.js"></script>
 <script>
 (function(){
@@ -314,7 +315,10 @@ function appLink(link,a){
 function showDone(){
   var a=$("b-app-dl");
   a.hidden=!APP.play;$("done-fallback").hidden=!!APP.play;
-  if(APP.play)a.href=isAnd&&APP.pkg?"intent://#Intent;package="+APP.pkg+";action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;S.browser_fallback_url="+encodeURIComponent(APP.play)+";end":APP.play;
+  // Play URL carries the Install Referrer (ad campaign, or a "came from the website" marker). The intent
+  // fallback is that same URL, encoded once more because it sits inside another URL.
+  var play=APP.play&&zattr.playUrl(APP.play);
+  if(APP.play)a.href=isAnd&&APP.pkg?"intent://#Intent;package="+APP.pkg+";action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;S.browser_fallback_url="+encodeURIComponent(play)+";end":play;
   show("s-done");
 }
 // "Approve the payment" while the user is in the UPI app; "Processing Payment" once they are back and it isn't confirmed yet.
