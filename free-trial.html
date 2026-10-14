@@ -13,8 +13,12 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 .wrap{max-width:480px;margin:0 auto;padding:27px 16px 140px;background:linear-gradient(#161616,var(--bg) 300px)}
-.hero{position:relative;height:200px;border-radius:24px;overflow:hidden;background:#e2b96a}
-.hero img{width:100%;height:100%;object-fit:cover;object-position:50% 20%;display:block}
+.hero{position:relative;aspect-ratio:16/9;border-radius:24px;overflow:hidden;background:#1c1c1c}
+.hero img,.hero video{width:100%;height:100%;object-fit:cover;object-position:50% 20%;display:block}
+.hero video{position:absolute;inset:0}
+.hero .snd{position:absolute;right:12px;bottom:12px;width:36px;height:36px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;cursor:pointer}
+.hero .snd svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hero .snd .on{display:none}.hero .snd.unmuted .on{display:block}.hero .snd.unmuted .off{display:none}
 .eyebrow{text-align:center;color:#c9b98a;font-weight:600;font-size:15px;letter-spacing:.5px;margin:22px 0 14px}
 h1{font-size:26px;line-height:1.2;text-align:center;margin:0 0 30px;font-weight:700}
 .feats{display:flex;justify-content:space-between;text-align:center;font-size:12.5px;line-height:1.3;margin-bottom:26px}
@@ -110,7 +114,11 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
 </head>
 <body>
 <div class="wrap">
-  <div class="hero"><img src="zena-hero.jpg" alt="Woman reading her horoscope on her phone" width="1181" height="516"></div>
+  <div class="hero">
+    <img src="zena-hero.jpg" alt="Woman reading her horoscope on her phone" width="1181" height="516">
+    <video id="hero-v" src="https://storage.googleapis.com/ringly-cdn-2/zena/ZenaIntroCompressed.mp4" poster="zena-hero.jpg" autoplay muted loop playsinline preload="metadata" aria-label="Zena introduction"></video>
+    <button class="snd" id="b-snd" type="button" aria-label="Turn sound on"><svg class="off" viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4zM22 9l-6 6M16 9l6 6"/></svg><svg class="on" viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+  </div>
   <div class="eyebrow">Ask all your worries away</div>
   <h1>Zena has all the answers for you</h1>
 
@@ -207,6 +215,19 @@ svg{width:22px;height:22px;fill:none;stroke:var(--gold);stroke-width:1.5;stroke-
     <a class="lnk" href="#" id="b-close" hidden>Close</a>
   </div>
 </div>
+<script>
+// Hero video: starts muted (browsers only allow muted autoplay). Data saver / reduced motion: poster only.
+(function(){
+  var v=document.getElementById("hero-v"),b=document.getElementById("b-snd");
+  if(!v)return;
+  var c=navigator.connection||{},still=c.saveData||(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches);
+  if(still){v.removeAttribute("autoplay");v.preload="none"}
+  else{var p=v.play();if(p&&p.catch)p.catch(function(){})} // blocked autoplay (e.g. iOS low power): poster stays, tap plays
+  v.addEventListener("error",function(){v.style.display="none";b.style.display="none"}); // fall back to the image
+  b.onclick=function(e){e.stopPropagation();v.muted=!v.muted;b.classList.toggle("unmuted",!v.muted);b.setAttribute("aria-label",v.muted?"Turn sound on":"Turn sound off");if(v.paused)v.play().catch(function(){})};
+  v.onclick=function(){v.paused?v.play().catch(function(){}):v.pause()};
+})();
+</script>
 <script src="/attribution.js"></script>
 <script src="/meta-pixel.js"></script>
 <script>
