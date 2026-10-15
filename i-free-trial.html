@@ -103,7 +103,7 @@ body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 "DM Sans",syste
 <body>
 <div class="wrap">
   <div class="hero"><img src="islamic-hero.jpg" alt="" onerror="this.remove()"></div> <!-- placeholder: drop islamic-hero.jpg next to this file -->
-  <div class="chips"><span class="on">Islamic Wallpaper</span><span>Islamic Ringtones</span><span>Zikr Counter</span><span>Make Dua</span></div>
+  <div class="chips" id="chips"><span class="on">Islamic Wallpaper</span><span>Islamic Ringtones</span><span>Zikr Counter</span><span>Make Dua</span></div>
   <p class="price"><b>₹1</b>/ Unlimited For 2 Days</p>
 </div>
 <div class="bar">
@@ -192,6 +192,22 @@ body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 "DM Sans",syste
   v.addEventListener("error",function(){v.style.display="none";b.style.display="none"}); // fall back to the image
   b.onclick=function(e){e.stopPropagation();v.muted=!v.muted;b.classList.toggle("unmuted",!v.muted);b.setAttribute("aria-label",v.muted?"Turn sound on":"Turn sound off");if(v.paused)v.play().catch(function(){})};
   v.onclick=function(){v.paused?v.play().catch(function(){}):v.pause()};
+})();
+</script>
+<script>
+// Chips auto-scroll in a loop (list is doubled; scrollLeft wraps at the halfway point). Touch/drag pauses it.
+(function(){
+  var c=document.getElementById("chips");
+  if(!c||(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches))return;
+  c.innerHTML+=c.innerHTML;
+  var x=0,hold=false,t;
+  function hd(){hold=true;clearTimeout(t);t=setTimeout(function(){hold=false;x=c.scrollLeft},1500)}
+  ["touchstart","wheel","mousedown"].forEach(function(e){c.addEventListener(e,hd,{passive:true})});
+  c.addEventListener("touchmove",hd,{passive:true});
+  (function step(){
+    if(!hold){x+=.6;if(x>=c.scrollWidth/2)x-=c.scrollWidth/2;c.scrollLeft=x}
+    requestAnimationFrame(step);
+  })();
 })();
 </script>
 <script src="/attribution.js"></script>
