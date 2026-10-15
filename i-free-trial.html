@@ -104,7 +104,7 @@ body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 "DM Sans",syste
 <div class="wrap">
   <div class="hero"><img src="islamic-hero.jpg" alt="" onerror="this.remove()"></div> <!-- placeholder: drop islamic-hero.jpg next to this file -->
   <div class="chips" id="chips"><span class="on">Islamic Wallpaper</span><span>Islamic Ringtones</span><span>Zikr Counter</span><span>Make Dua</span></div>
-  <p class="price"><b>₹1</b>/ Unlimited For 2 Days</p>
+  <p class="price"><b>₹1</b>/ Unlimited For 1 Day</p>
 </div>
 <div class="bar">
   <a class="cta" id="b-main" href="#paywall">Continue →</a>
@@ -223,7 +223,7 @@ var token="",userId="",mobile="";   // in memory only, never persisted
 var pollTimer=null;
 
 function api(path,body,auth,method){
-  var h={"Content-Type":"application/json","X-TENANT":"ZENA","device-id":"web"};
+  var h={"Content-Type":"application/json","X-TENANT":"ISLAMIC","device-id":"web"};
   if(auth){h["Authorization"]="Bearer "+token;h["user-id"]=userId}
   return fetch(API+path,{method:method||"POST",headers:h,body:body?JSON.stringify(body):undefined})
     .then(function(r){return r.json().catch(function(){return{}}).then(function(j){
