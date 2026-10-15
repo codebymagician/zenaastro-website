@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111111">
+<meta name="robots" content="noindex">
+<title>Start for ₹1 — Zena</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fffdf3;--card:#1c1c1c;--fg:#1a1208;--mute:#b9b4a8;--gold:#e9d8a6;--line:#3a3a3a;--green:#2f7d3e}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 "DM Sans",system-ui,sans-serif}
+.wrap{max-width:480px;margin:0 auto;padding:24px 16px 150px}
+.top h1{margin:0;font-size:26px;line-height:1.2;font-weight:700}
+.top p{margin:4px 0 0;font-size:17px}
+.hero{margin-top:22px;aspect-ratio:1;border-radius:20px;overflow:hidden;background:radial-gradient(circle at 50% 30%,#2f6f62,#14463e);box-shadow:0 8px 24px rgba(0,0,0,.15)}
+.hero img{width:100%;height:100%;object-fit:cover;display:block}
+.chips{display:flex;gap:10px;overflow-x:auto;margin:28px -16px 0;padding:0 16px;scrollbar-width:none}
+.chips span{flex:none;padding:12px 24px;border-radius:999px;font-size:18px;font-weight:500;border:1.5px solid #f0e2a0;background:#fffbe6}
+.chips span.on{background:var(--green);border-color:var(--green);color:#fff}
+.wrap h2{margin:32px 0 12px;font-size:22px;font-weight:600}
+.payrow{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:14px;background:#fff;border:1px solid #ece8d8;font-size:22px;font-weight:600}
+.payrow img{width:38px;height:auto}.payrow b{margin-left:auto;font-weight:400}
+.price{margin:34px 0 0;font-size:20px}.price b{font-size:64px;line-height:1;color:var(--green);margin-right:8px}
+.cta{display:block;text-align:center;padding:18px;border-radius:999px;border:0;color:#fff;font-weight:600;font-size:20px;text-decoration:none;background:#1a1208}
+.bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);z-index:5;width:100%;max-width:480px;padding:28px 16px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(rgba(255,253,243,0),var(--bg) 40%)}
+.bar .note{display:none}
+.note{text-align:center;font-size:13px;margin:14px 0 0}
+.ov{z-index:100;position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;padding:20px}
+.ov:target{display:flex}
+.box{max-width:340px;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:28px 24px;text-align:center}
+.box h2{margin:8px 0;font-size:20px}.box p{color:var(--mute);margin:0 0 20px}
+.box{width:100%}.box [hidden]{display:none}
+.box input{width:100%;padding:14px;margin-bottom:14px;border-radius:12px;border:1px solid var(--line);background:#111;color:var(--fg);font-size:18px;text-align:center}
+.box button.cta{width:100%;font-family:inherit;cursor:pointer}
+.ph{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-left:14px;border-radius:12px;border:1px solid var(--line);background:#111;font-size:18px}
+.ph span{color:var(--mute)}.ph input{border:0;margin:0;background:none;text-align:left;padding-left:0}
+.lnk{display:block;margin-top:14px;background:none;border:0;color:var(--mute);font-size:14px;cursor:pointer;text-decoration:underline}
+.err{color:#ff8a80;font-size:14px;margin-top:14px}.wait{font-size:14px}
+#qr{width:200px;height:200px;background:#fff;border-radius:12px;padding:8px;margin:0 auto 14px;display:block}
+.ov.pay{background:#fff;align-items:flex-start;padding:0;overflow:auto}
+.ov.pay .box{max-width:480px;padding:0;background:none;border:0;border-radius:0;text-align:left;color:#111;font-family:"DM Sans",system-ui,sans-serif}
+.ph-head{display:flex;align-items:center;gap:18px;padding:18px 16px 14px;border-bottom:1px solid #e6e6ea;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.ph-head button{flex:none;display:grid;place-items:center;width:40px;height:40px;margin:-8px 0 -8px -8px;padding:0;background:none;border:0;cursor:pointer;color:#111}
+.ph-head svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ov.pay h2{margin:0;font-size:22px;font-weight:600;color:#111}
+.ov.pay .amt{margin:2px 0 0;font-size:14px;color:#8a8a92}
+.sec{display:flex;align-items:center;gap:8px;padding:11px 16px;background:#ececef;font-size:16px;font-weight:500;color:#6b6b73}
+.sec .fast{display:inline-flex;align-items:center;gap:3px;color:#1769c2}
+.sec .fast svg{width:15px;height:15px;fill:#1769c2}
+.ban{margin:0;padding:11px 16px;background:#b8e6fb;font-size:14px;color:#0b5a8c}
+.app{display:flex;align-items:center;gap:16px;width:100%;padding:12px 16px;margin:0;border:0;background:#fff;color:#111;font:inherit;font-size:18px;text-align:left;cursor:pointer}
+.app:active{background:#f4f4f6}
+.app i{flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:50%;overflow:hidden;background:#fff;border:1px solid #ececef}
+.app i img{display:block}
+.app i .crop{display:block;overflow:hidden}
+.app b{margin-left:auto;font-weight:400;font-size:26px;color:#555;line-height:1}
+.app[disabled]{opacity:.5}
+.ov.pay .ban{margin:0;color:#0b5a8c}
+.ov.pay .sec .fast svg{width:15px;height:15px;fill:#1769c2;stroke:none}
+.ov.pay .app i svg{width:26px;height:26px;fill:none;stroke:#111;stroke-width:1.6}
+.ov.login{background:#000;align-items:flex-start;padding:40px 16px}
+.ov.login .box{background:none;border:0;border-radius:0;padding:0;max-width:285px;text-align:left;font-family:"DM Sans",system-ui,sans-serif}
+.ov.login h2{margin:0;font-size:22px;font-weight:500;line-height:1.25}
+.ov.login .num{margin:0;font-size:24px;font-weight:400;color:#8a8a8a;line-height:1.25}
+.ov.login .chg{display:inline-block;margin-top:6px;padding:0;background:none;border:0;font:500 13px "DM Sans",sans-serif;color:#e8d5a0;cursor:pointer;text-decoration:none}
+.ov.login .back{display:grid;place-items:center;width:44px;height:44px;margin:-10px 0 6px -12px;padding:0;background:none;border:0;cursor:pointer;color:#fff}
+.ov.login .back svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ov.login .row{display:flex;align-items:center;gap:16px;margin-top:28px}
+.ov.login .row input{flex:1;min-width:0;margin:0;padding:8px 0;border:0;border-radius:0;background:none;text-align:left;font:400 22px "DM Sans",sans-serif;color:#fff;outline:0}
+.ov.login .row input::placeholder{color:#6f6f6f}
+/* Chrome/Safari autofill paints a pale-blue box with dark text; keep it black with white text */
+.ov.login .row input:-webkit-autofill,.ov.login .row input:autofill{-webkit-text-fill-color:#fff;caret-color:#fff;-webkit-box-shadow:0 0 0 1000px #000 inset;box-shadow:0 0 0 1000px #000 inset;transition:background-color 9999s}
+.ov.login .cc{flex:none;padding:8px 8px 6px 0;border-bottom:1px solid #fff;font-size:17px;color:#fff}
+.ov.login .tmr{flex:none;font-size:13px;font-weight:600;color:#fff}
+.ov.login .tmr button{background:none;border:0;padding:0;font:600 13px "DM Sans",sans-serif;color:#e8d5a0;cursor:pointer}
+.ov.login .go{display:block;width:100%;height:50px;margin-top:56px;border:0;border-radius:6px;background:#1c1c1c;color:#e6e6e6;font:600 15px "DM Sans",sans-serif;cursor:pointer}
+.ov.login .terms{margin:20px 0 0;font-size:11px;line-height:1.5;color:#b7b7b7;text-align:center}
+.ov.login .terms a{color:#fff;text-decoration:underline}
+.ov.login .err{text-align:left;margin-top:12px}
+.ov.full{background:#0e0e0e}
+.ov.full .box{background:none;border:0;border-radius:0;padding:0;max-width:340px;font-family:"DM Sans",system-ui,sans-serif}
+.ov.full h2{margin:0 0 10px;font-size:22px;font-weight:500;color:#fff}
+.ov.full p{margin:0 0 14px;font-size:14px;line-height:1.5;color:#a8a8a8}
+.ov.full .safe{font-size:13px;color:#7fd08a}
+.ov.full .hint{position:fixed;left:0;right:0;bottom:calc(24px + env(safe-area-inset-bottom));margin:0;font-size:12px;color:#6f6f6f}
+.ov.full .lg{display:block;width:72px;height:72px;margin:0 auto 22px;border-radius:18px}
+.ov.full .sm{margin-bottom:8px;font-size:13px;font-weight:600;color:#fff}
+.ov.full .big{margin:0 0 14px;font-size:30px;line-height:1.2;font-weight:600}
+.ov.full .cta{margin-top:26px}
+.ov.full .lnk{margin:14px auto 0}
+.hg{position:relative;width:140px;height:140px;margin:0 auto 28px;display:grid;place-items:center}
+.hg:before{content:"";position:absolute;inset:0;border-radius:50%;opacity:.5;animation:glow 2.4s ease-in-out infinite;background:repeating-conic-gradient(rgba(233,216,166,.55) 0 1.2deg,transparent 1.2deg 6deg);-webkit-mask:radial-gradient(circle,transparent 52%,#000 54%);mask:radial-gradient(circle,transparent 52%,#000 54%)}
+.hg svg{width:56px;height:56px;fill:none;stroke:var(--gold);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;animation:flip 3s ease-in-out infinite}
+.hg.ok svg{animation:none;stroke:#7fd08a}
+@keyframes flip{0%,40%{transform:rotate(0)}60%,100%{transform:rotate(180deg)}}
+@keyframes glow{50%{opacity:.9}}
+@media (prefers-reduced-motion:reduce){.hg:before,.hg svg{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><h1>Start For Just ₹1</h1><p>Use All Features For 2 Days.</p></div>
+  <div class="hero"><img src="islamic-hero.jpg" alt="" onerror="this.remove()"></div> <!-- placeholder: drop islamic-hero.jpg next to this file -->
+  <div class="chips"><span>Prayer Times</span><span>Islamic Ringtones</span><span class="on">Zikr Counter</span></div>
+  <h2>Pay Using</h2>
+  <div class="payrow"><img src="/logos/paytm.svg" alt=""><span>Paytm</span><b>⌄</b></div>
+  <p class="price"><b>₹1</b>/ Unlimited For 2 Days</p>
+</div>
+<div class="bar">
+  <a class="cta" id="b-main" href="#paywall">Continue →</a>
+</div>
+
+<div class="ov login" id="paywall">
+  <div class="box">
+    <div id="s-phone">
+      <button class="back" id="b-back" type="button" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <h2>Mobile number</h2>
+      <div class="row"><span class="cc">+91</span><input id="mobile" type="tel" inputmode="numeric" maxlength="10" autocomplete="tel-national" aria-label="Mobile number"></div>
+      <button class="go" id="b-send">Get OTP</button>
+      <p class="terms">By continuing, you confirm you're 18+ and accept our <a href="/terms-and-conditions/">Terms of Use</a> &amp; <a href="/privacy-policy/">Privacy Policy</a></p>
+    </div>
+    <div id="s-otp" hidden>
+      <h2>OTP sent to</h2>
+      <p class="num" id="otp-to"></p>
+      <button class="chg" id="b-change">Change Number</button>
+      <div class="row"><input id="otp" type="tel" inputmode="numeric" maxlength="4" placeholder="Enter OTP" autocomplete="one-time-code" aria-label="Enter OTP"><span class="tmr" id="tmr"></span></div>
+      <button class="go" id="b-verify">Submit</button>
+      <p class="terms">By continuing, you confirm you're 18+ and accept our <a href="/terms-and-conditions/">Terms of Use</a> &amp; <a href="/privacy-policy/">Privacy Policy</a></p>
+    </div>
+    <div id="s-load" hidden><p>Starting your trial…</p></div>
+    <div id="s-pick" hidden>
+      <div class="ph-head"><button type="button" id="b-pick-back" aria-label="Back"><svg viewBox="0 0 24 24"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></button><div><h2>Payments</h2><p class="amt">Amount : ₹1</p></div></div>
+      <div class="sec">UPI <span class="fast"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>Fastest</span></div>
+      <p class="ban">88.5% of our users prefer paying via UPI</p>
+      <button class="app" data-app="phonepe"><i><span class="crop" style="width:52px;height:52px"><img src="/logos/phonepe.svg" alt="" style="height:52px;width:auto"></span></i><span>PhonePe</span><b>›</b></button>
+      <button class="app" data-app="gpay"><i><span class="crop" style="width:30px;height:30px"><img src="/logos/gpay.svg" alt="" style="height:30px;width:auto"></span></i><span>Google Pay</span><b>›</b></button>
+      <button class="app" data-app="paytm"><i><img src="/logos/paytm.svg" alt="" style="width:38px;height:auto"></i><span>Paytm</span><b>›</b></button>
+      <div class="sec">Pay via QR code</div>
+      <button class="app" id="b-qr"><i><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#111" stroke-width="1.6"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z"/></svg></i><span>Scan QR Code</span><b>›</b></button>
+    </div>
+    <div id="s-wait" hidden>
+      <div class="hg" aria-hidden="true"><svg viewBox="0 0 64 64"><path d="M16 8h32M16 56h32M18 8c0 14 10 18 14 24-4 6-14 10-14 24M46 8c0 14-10 18-14 24 4 6 14 10 14 24"/><path d="M25 15h14l-7 11zM23 53c4-9 14-9 18 0z" fill="currentColor" stroke="none" style="fill:var(--gold)"/></svg></div>
+      <h2 id="wait-h">Approve the payment in your UPI app</h2>
+      <p id="wait-p">Once approved, this page will update on its own.</p>
+      <p class="safe" id="wait-safe">✓ 100% safe and secure</p>
+      <button class="lnk" id="b-wait-other">Choose another app</button>
+      <p class="hint">Do not go back or close the app</p>
+    </div>
+    <div id="s-ok" hidden>
+      <div class="hg ok" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="22"/><path d="M22 33l7 7 14-15"/></svg></div>
+      <h2>Payment Successful</h2>
+      <p>Your free trial has started</p>
+    </div>
+    <div id="s-nf" hidden>
+      <h2>Select a different UPI app</h2>
+      <p>The app you selected isn't found on this device. Choose another UPI app to pay ₹1 and start your trial.</p>
+      <button class="cta" id="b-other">Select another app</button>
+      <button class="lnk" id="b-nfx">Cancel</button>
+    </div>
+    <div id="s-soon" hidden>
+      <div style="font-size:36px">🚧</div>
+      <h2>Payment gateway yet to be integrated</h2>
+      <p>This is a demo page. No payment was taken.</p>
+    </div>
+    <div id="s-pay" hidden>
+      <h2>Pay ₹1 to start</h2>
+      <p>Scan with any UPI app, or tap below on your phone. Refunded instantly.</p>
+      <img id="qr" alt="UPI QR code" hidden>
+      <a class="cta" id="b-upi" href="#" hidden>Pay with UPI app</a>
+      <p id="pay-wait" class="wait">Waiting for payment…</p>
+    </div>
+    <div id="s-done" hidden>
+      <img class="lg" src="/logo.svg" alt="Zena" width="72" height="72">
+      <p class="sm">Your subscription is active!</p>
+      <h2 class="big">Continue on the Zena app</h2>
+      <p>Download the app and log in with the same mobile number to ask Zena anything, see your kundali, daily horoscope &amp; more.</p>
+      <a class="cta" id="b-app-dl" href="#" hidden>Download the app</a>
+      <p id="done-fallback">Open the Zena app and log in with this number.</p>
+    </div>
+    <div id="err" class="err" role="alert" hidden></div>
+    <a class="lnk" href="#" id="b-close" hidden>Close</a>
+  </div>
+</div>
+<script>
+// Hero video: starts muted (browsers only allow muted autoplay). Data saver / reduced motion: poster only.
+(function(){
+  var v=document.getElementById("hero-v"),b=document.getElementById("b-snd");
+  if(!v)return;
+  var c=navigator.connection||{},still=c.saveData||(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches);
+  if(still){v.removeAttribute("autoplay");v.preload="none"}
+  else{var p=v.play();if(p&&p.catch)p.catch(function(){})} // blocked autoplay (e.g. iOS low power): poster stays, tap plays
+  v.addEventListener("error",function(){v.style.display="none";b.style.display="none"}); // fall back to the image
+  b.onclick=function(e){e.stopPropagation();v.muted=!v.muted;b.classList.toggle("unmuted",!v.muted);b.setAttribute("aria-label",v.muted?"Turn sound on":"Turn sound off");if(v.paused)v.play().catch(function(){})};
+  v.onclick=function(){v.paused?v.play().catch(function(){}):v.pause()};
+})();
+</script>
+<script src="/attribution.js"></script>
+<script src="/meta-pixel.js"></script>
+<script>
+(function(){
+// Backend base URL. The /web-service/v1 routes are in zenaclub-backend.
+var API="https://apis.zenaclub.com";
+var $=function(i){return document.getElementById(i)};
+var APP={pkg:"com.zenaastro.app",play:"https://play.google.com/store/apps/details?id=com.zenaastro.app"}; // Zena Android package and Play Store listing URL; set both to enable "Download the app"
+var PAYMENTS_LIVE=true;
+var token="",userId="",mobile="";   // in memory only, never persisted
+var pollTimer=null;
+
+function api(path,body,auth,method){
+  var h={"Content-Type":"application/json","X-TENANT":"ZENA","device-id":"web"};
+  if(auth){h["Authorization"]="Bearer "+token;h["user-id"]=userId}
+  return fetch(API+path,{method:method||"POST",headers:h,body:body?JSON.stringify(body):undefined})
+    .then(function(r){return r.json().catch(function(){return{}}).then(function(j){
+      if(!r.ok)throw new Error(j.error||"Something went wrong. Please try again.");
+      return j})});
+}
+function show(id){["s-phone","s-otp","s-load","s-soon","s-pick","s-wait","s-ok","s-nf","s-pay","s-done"].forEach(function(s){$(s).hidden=s!==id});
+  var lg=id==="s-phone"||id==="s-otp",fl=id==="s-wait"||id==="s-ok"||id==="s-done",pg=id==="s-pick";
+  $("paywall").classList.toggle("login",lg);$("paywall").classList.toggle("full",fl);$("paywall").classList.toggle("pay",pg);$("b-close").hidden=lg||fl||pg;err("")}
+function err(m){$("err").textContent=m;$("err").hidden=!m}
+function busy(b,on){b.disabled=on;b.style.opacity=on?.6:1}
+function run(btn,fn){busy(btn,true);err("");return Promise.resolve().then(fn).catch(function(e){err(e.message)}).then(function(){busy(btn,false)})}
+
+// Switches to the OTP screen and focuses its field BEFORE the request goes out: iOS only raises the
+// keyboard for focus() called inside the tap/keystroke itself, not after an async reply.
+function sendOtp(resend){
+  var m=resend===true?mobile:$("mobile").value.replace(/\D/g,"");
+  if(m.length!==10){err("Enter a valid 10-digit mobile number.");return}
+  mobile=m;
+  if(resend!==true){
+    $("otp-to").textContent="(+91) "+m.slice(0,5)+" "+m.slice(5);$("otp").value="";
+    editingNumber=false;show("s-otp");$("otp").focus();countdown(30);
+  }
+  return api("/web-service/v1/public/request-otp",{mobile:m}).then(function(){if(resend===true)countdown(30)},function(e){
+    if(resend===true){err(e.message);return}
+    clearInterval(cd);show("s-phone");err(e.message);$("mobile").focus();
+  });
+}
+// "30 sec" countdown on the OTP screen; at zero it turns into a Resend link
+var cd=null;
+function countdown(n){
+  clearInterval(cd);
+  function tick(){
+    if(n>0){$("tmr").textContent=n+" sec";n--;return}
+    clearInterval(cd);
+    $("tmr").innerHTML='<button id="b-resend" type="button">Resend OTP</button>';
+    $("b-resend").onclick=function(){run(this,function(){return sendOtp(true)})};
+  }
+  tick();cd=setInterval(tick,1000);
+}
+function verifyOtp(){
+  var o=$("otp").value.replace(/\D/g,"");
+  if(o.length!==4){err("Enter the 4-digit code.");return}
+  return api("/web-service/v1/public/verify-otp",{mobile:mobile,otp:o}).then(function(r){
+    token=r.token;userId=r.userDetails&&r.userDetails.id;
+    if(!token||!userId)throw new Error("Login failed. Please try again.");
+    try{sessionStorage.setItem("zt",JSON.stringify({token:token,userId:userId,mobile:mobile}))}catch(e){}
+    return next()}).catch(function(e){$("otp").value="";$("otp").focus();throw e});
+}
+// after login go straight to payment: app picker on mobile, QR on desktop
+function next(){
+  if(!PAYMENTS_LIVE){show("s-soon");return}
+  show("s-load");
+  // already subscribed? then there is nothing to pay for. If the check itself fails, fall through
+  // to payment: initiate rejects a duplicate subscription server-side anyway.
+  return api("/web-service/v1/auth/subscription/status",null,true,"GET").then(function(r){return r.status==="ACTIVE"},function(){return false}).then(function(active){
+    if(active){
+      showDone();return;
+    }
+    if(isMob){show("s-pick");return}
+    return startPayment();
+  });
+}
+var qdata=null,sel="paytm",launched=false;
+var UA=navigator.userAgent,isAnd=/Android/i.test(UA),isMob=/Android|iPhone|iPad|iPod/i.test(UA);
+var APPS={paytm:{n:"Paytm",pkg:"net.one97.paytm",ios:"paytmmp"},phonepe:{n:"PhonePe",pkg:"com.phonepe.app",ios:"phonepe"},gpay:{n:"Google Pay",pkg:"com.google.android.apps.nbu.paisa.user",ios:"tez"}};
+// initiate + QR once per page; the mandate and txnToken are reused if the user switches app.
+function getPayment(){
+  if(qdata)return Promise.resolve(qdata);
+  var ev=zmeta.uuid(),mm=zmeta.match();
+  zmeta.track("InitiateCheckout",100,ev);
+  return api("/web-service/v1/auth/subscription/initiate",{method:"upi",metaEventId:ev,fbc:mm.fbc,fbp:mm.fbp,sourceUrl:mm.sourceUrl},true).then(function(r){
+    if(!r.paytmTxnToken)throw new Error("Payment is unavailable right now. Please try again later.");
+    return api("/web-service/v1/auth/subscription/paytm/qr",{mandateId:r.mandateId,txnToken:r.paytmTxnToken},true)
+  }).then(function(q){qdata=q;return q});
+}
+function startPayment(){
+  return getPayment().then(function(q){
+    if(q.qrCodeImageUrl){$("qr").src=q.qrCodeImageUrl;$("qr").hidden=false}
+    if(q.qrCodeContent){$("b-upi").href=q.qrCodeContent;$("b-upi").hidden=!isMob}
+    show("s-pay");poll(q)});
+}
+// ponytail: assumes the deep link is upi://...; any other scheme (e.g. paytmmp://) only opens its own app.
+function appLink(link,a){
+  var m=/^upi:\/\/(.*)$/i.exec(link);if(!m)return link;
+  if(isAnd)return "intent://"+m[1]+"#Intent;scheme=upi;package="+a.pkg+";end";
+  return a.ios==="tez"?"tez://upi/"+m[1]:a.ios+"://"+m[1];
+}
+// Only Android can tell an app opened (the page goes hidden); iOS shows an "Open in <app>?" prompt
+// that can take longer than any timer, so there it just waits and polls.
+// Download button: opens the app if installed (Android), otherwise the Play Store listing.
+function showDone(){
+  var a=$("b-app-dl");
+  a.hidden=!APP.play;$("done-fallback").hidden=!!APP.play;
+  // Play URL carries the Install Referrer (ad campaign, or a "came from the website" marker). The intent
+  // fallback is that same URL, encoded once more because it sits inside another URL.
+  var play=APP.play&&zattr.playUrl(APP.play);
+  if(APP.play)a.href=isAnd&&APP.pkg?"intent://#Intent;package="+APP.pkg+";action=android.intent.action.MAIN;category=android.intent.category.LAUNCHER;S.browser_fallback_url="+encodeURIComponent(play)+";end":play;
+  show("s-done");
+}
+// "Approve the payment" while the user is in the UPI app; "Processing Payment" once they are back and it isn't confirmed yet.
+function setWait(proc){
+  $("wait-h").textContent=proc?"Processing Payment":"Approve the payment in your UPI app";
+  $("wait-p").textContent=proc?"Please wait while we process your payment":"Once approved, this page will update on its own.";
+  $("wait-safe").hidden=proc;$("b-wait-other").hidden=proc;
+}
+function onVis(){
+  if(document.hidden){launched=true;return}
+  if(launched&&!$("s-wait").hidden)setWait(true);
+  if(pollNow)pollNow(); // back from the UPI app: check right away instead of waiting for the next tick
+}
+function payApp(){
+  return getPayment().then(function(q){
+    var link=q.qrCodeContent||"";
+    if(!link)throw new Error("Couldn't open a UPI app. Try the QR code.");
+    if(sel!=="paytm"&&!/^upi:/i.test(link))throw new Error("That app isn't supported for this payment yet. Choose Paytm or QR.");
+    try{sessionStorage.setItem("zt",JSON.stringify({token:token,userId:userId,mobile:mobile,mandateId:q.internalOrderId}))}catch(e){}
+    launched=false;document.removeEventListener("visibilitychange",onVis);document.addEventListener("visibilitychange",onVis);
+    location.href=appLink(link,APPS[sel]);
+    setWait(false);show("s-wait");poll(q);
+    if(isAnd)setTimeout(function(){if(!launched&&!$("s-wait").hidden){clearTimeout(pollTimer);pollNow=null;show("s-nf")}},2500);
+  });
+}
+var pollNow=null;
+function poll(q){
+  clearTimeout(pollTimer);
+  var end=Date.now()+(q.maxPollingDurationMs||180000);
+  function stop(){pollNow=null}
+  function tick(){pollTimer=setTimeout(check,q.pollingIntervalMs||3000)}
+  function check(){
+    clearTimeout(pollTimer);
+    api("/web-service/v1/auth/subscription/paytm/qr/status?mandateId="+encodeURIComponent(q.internalOrderId),null,true,"GET").then(function(s){
+      if(s.isPaid){stop();if(s.isTrial)zmeta.track("StartTrial",s.amount||100,q.internalOrderId);show("s-ok");setTimeout(showDone,1600);return}
+      if(s.isFinal||Date.now()>end){stop();$("pay-wait").textContent="";err("Payment didn't complete. Close and try again.");return}
+      tick()
+    }).catch(function(){if(Date.now()>end){stop();err("Couldn't confirm payment. Please try again.")}else tick()});
+  }
+  pollNow=check;tick();
+}
+$("b-send").onclick=function(){run(this,sendOtp)};
+// Tapping an app row pays with it straight away (no radio + Pay button)
+document.querySelectorAll(".app[data-app]").forEach(function(b){b.onclick=function(){sel=b.dataset.app;run(b,payApp)}});
+$("b-pick-back").onclick=function(){location.hash=""};
+$("b-qr").onclick=function(){run(this,startPayment)};
+$("b-other").onclick=function(){show("s-pick")};
+$("b-wait-other").onclick=function(){clearTimeout(pollTimer);pollNow=null;show("s-pick")};
+$("b-nfx").onclick=function(){location.hash=""};
+$("b-verify").onclick=function(){run(this,verifyOtp)};
+var editingNumber=false;
+$("b-change").onclick=function(){editingNumber=true;show("s-phone");$("mobile").focus()};
+// Back: while editing the number, return to the OTP already sent; on the first phone screen, close the sheet
+$("b-back").onclick=function(){
+  if(editingNumber){editingNumber=false;show("s-otp");$("otp").focus();return}
+  location.hash="";
+};
+// 10 digits typed, pasted or autofilled: send the OTP without another tap
+$("mobile").oninput=function(){
+  this.value=this.value.replace(/\D/g,"");
+  if(this.value.length===10&&!$("b-send").disabled)$("b-send").click();
+};
+// 4 digits typed, pasted or filled from the SMS: submit without another tap
+$("otp").oninput=function(){
+  this.value=this.value.replace(/\D/g,"");
+  if(this.value.length===4&&!$("b-verify").disabled)$("b-verify").click();
+};
+[["mobile","b-send"],["otp","b-verify"]].forEach(function(p){$(p[0]).onkeydown=function(e){if(e.key==="Enter")$(p[1]).click()}});
+// restore the login after a refresh (sessionStorage: survives reload, dies with the tab)
+try{var sv=JSON.parse(sessionStorage.getItem("zt")||"{}");
+  if(sv.token&&sv.userId&&sv.mobile){token=sv.token;userId=sv.userId;mobile=sv.mobile}}catch(e){}
+// already logged in: the main button goes straight to payment (no phone/OTP, no second tap)
+$("b-main").onclick=function(e){
+  if(token){Promise.resolve(next()).catch(function(e){err(e.message)});return}
+  // logged out: open the sheet and focus the number inside this tap, or iOS will not raise the keyboard
+  e.preventDefault();location.hash="paywall";$("mobile").focus();
+};
+// refresh with the sheet open: mobile resumes at the picker; desktop closes it so one tap starts payment
+if(token&&location.hash==="#paywall"){isMob&&PAYMENTS_LIVE?Promise.resolve(next()).catch(function(e){err(e.message)}):location.hash=""}
+$("b-close").onclick=function(e){e.preventDefault();clearTimeout(pollTimer);pollNow=null;location.hash=""};
+})();
+</script>
+</body>
+</html>
